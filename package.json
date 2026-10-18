@@ -1,0 +1,24 @@
+{
+  "name": "phoevents-videos",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vidéos motion design PhoEvents générées avec Remotion",
+  "scripts": {
+    "studio": "remotion studio",
+    "render:story": "remotion render Story videos/phoevents-story.mp4",
+    "render:post": "remotion render Post videos/phoevents-post.mp4",
+    "render:intro": "remotion render Intro videos/phoevents-intro.mp4",
+    "render:all": "npm run render:story && npm run render:post && npm run render:intro"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.536",
+    "@remotion/fonts": "4.0.536",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.536"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.12",
+    "typescript": "5.6.3"
+  }
+}
