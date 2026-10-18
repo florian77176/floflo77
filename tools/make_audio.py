@@ -1,7 +1,7 @@
 """Compose la musique et les effets sonores des vidéos (100 % originaux, libres de droits).
 
-Usage : python tools/make_audio.py [durée_en_secondes]
-Écrit public/audio/music.wav et public/audio/sfx-*.wav
+Usage : python tools/make_audio.py            -> effets sonores public/audio/sfx-*.wav
+        python tools/make_audio.py --music 36 -> + une musique synthétique de secours (music.wav)
 """
 import os
 import sys
@@ -213,8 +213,9 @@ def sfx():
 
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
-    dur = float(sys.argv[1]) if len(sys.argv) > 1 else 36
-    l, r = music(dur)
-    save('music.wav', l, r)
+    if '--music' in sys.argv:
+        dur = float(sys.argv[sys.argv.index('--music') + 1])
+        l, r = music(dur)
+        save('music.wav', l, r)
     sfx()
     print('ok', sorted(os.listdir(OUT)))

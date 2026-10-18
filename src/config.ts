@@ -61,3 +61,7 @@ export const promo = {
   cta: 'Réservez votre date',
   ctaSub: 'Devis gratuit · réponse sous 24h',
 };
+
+// Crédit obligatoire de la musique (licence CC BY 4.0) : affiché en petit à la fin de la vidéo
+export const musicCredit = 'Musique : « Funky Chunk » Kevin MacLeod (incompetech.com) · CC BY 4.0';
+

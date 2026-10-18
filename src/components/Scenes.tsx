@@ -1,6 +1,6 @@
 import React from 'react';
 import {Audio, interpolate, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
-import {brand, promo} from '../config';
+import {brand, musicCredit, promo} from '../config';
 import {sans, serif} from '../fonts';
 import {LAYOUT_RATIO, Template, TemplateLayout, TemplateStyle} from './Template';
 import {Flash, goldGradient, Kicker, Logo, Reveal, Title, useUnit} from './ui';
@@ -412,6 +412,9 @@ export const CtaScene: React.FC = () => {
           <br />📍 {brand.zone}
         </div>
       </Reveal>
+      <div style={{position: 'absolute', bottom: 24 * unit, left: 0, right: 0, textAlign: 'center', fontFamily: sans, fontSize: 15 * unit, color: 'rgba(250,247,240,0.35)'}}>
+        {musicCredit}
+      </div>
     </Stack>
   );
 };
