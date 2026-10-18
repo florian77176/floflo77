@@ -20,22 +20,29 @@ OUT = os.path.join(os.path.dirname(__file__), '..', 'public', 'audio', 'voice')
 
 # Texte de la voix off (« Pho Events » est prononcé « Fo-Évent »)
 LINES = {
-    'hook': "Le souvenir que vos invités vont s'arracher !",
+    'hook': 'Vous préparez un mariage, un anniversaire ou une soirée ? Regardez ça !',
     'smile': 'Et maintenant… souriez !',
-    'templates': "Mariage, anniversaire, baptême ou soirée d'entreprise : votre cadre photo est créé sur mesure, à vos prénoms et à vos couleurs.",
-    'prints': 'Les photos sont imprimées sur place : chacun repart avec son souvenir !',
-    'included': "Photos illimitées, livraison, installation… on s'occupe de tout.",
-    'formulas': 'Et tout ça, à partir de cent quatre-vingts euros.',
-    'review': 'Cinq étoiles sur Google : nos clients adorent !',
-    'cta': 'Pho Events : réservez vite votre date, sur pho events point F R !',
+    'tpl-mariage': 'Pour votre mariage : une bandelette élégante, à vos deux prénoms.',
+    'tpl-anniversaire': 'Pour un anniversaire : quatre photos, et des étoiles plein les yeux !',
+    'tpl-bapteme': 'Pour un baptême : un grand portrait, tout en douceur.',
+    'tpl-babyshower': 'Pour une baby shower : un cadre tendre, aux couleurs de bébé.',
+    'tpl-entreprise': 'Et pour votre entreprise : votre logo, vos couleurs, votre image !',
+    'prints': 'Les photos sont imprimées sur place : vos invités repartent avec leur souvenir !',
+    'included': "Photos illimitées, livraison, installation : on s'occupe de tout !",
+    'formulas': 'Le tout, à partir de cent quatre-vingts euros seulement.',
+    'review': 'Et nos clients nous donnent cinq étoiles sur Google !',
+    'cta': 'Pho Events : réservez votre date sur pho events point F R. Devis gratuit, réponse en vingt-quatre heures !',
 }
 
 # Ce que la transcription doit retrouver (sert à vérifier chaque prise)
 EXPECT = {
-    'templates': "mariage anniversaire baptême ou soirée d'entreprise votre cadre photo est créé sur mesure à vos prénoms et à vos couleurs",
-    'cta': 'faux évent réservez vite votre date sur faux évent fr',
+    'formulas': 'le tout à partir de 180 euros seulement',
+    'cta': 'faux évent réservez votre date sur faux évent fr devis gratuit réponse en 24 heures',
 }
 TRIES = 5
+# Voix « qui accroche » : plus expressive (exaggeration haute) et plus rythmée (cfg bas)
+EXAGGERATION = 0.85
+CFG = 0.35
 
 
 def norm(t):
@@ -56,7 +63,7 @@ if __name__ == '__main__':
         best = None
         for attempt in range(TRIES):
             torch.manual_seed(attempt)
-            wav = model.generate(LINES[key], language_id='fr', audio_prompt_path=ref, exaggeration=0.65, cfg_weight=0.45, temperature=0.7)
+            wav = model.generate(LINES[key], language_id='fr', audio_prompt_path=ref, exaggeration=EXAGGERATION, cfg_weight=CFG, temperature=0.7)
             audio16 = torchaudio.functional.resample(wav, model.sr, 16000)[0].numpy()
             heard = ' '.join(seg.text for seg in asr.transcribe(audio16, language='fr')[0])
             sc = score(heard, EXPECT.get(key, LINES[key]))
