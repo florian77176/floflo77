@@ -10,7 +10,8 @@
     "render:voix": "remotion render ReelVoix videos/phoevents-reel-voix-homme.mp4",
     "render:post": "remotion render Post videos/phoevents-post.mp4",
     "render:intro": "remotion render Intro videos/phoevents-intro.mp4",
-    "render:all": "npm run render:reel && npm run render:sans-musique && npm run render:voix && npm run render:post && npm run render:intro && sh tools/master_audio.sh videos/*.mp4"
+    "render:all": "npm run render:reel && npm run render:sans-musique && npm run render:voix && npm run render:post && npm run render:intro && npm run render:cover && sh tools/master_audio.sh videos/*.mp4",
+    "render:cover": "remotion still Cover videos/phoevents-reel-couverture.png --frame=80"
   },
   "dependencies": {
     "@remotion/cli": "4.0.536",

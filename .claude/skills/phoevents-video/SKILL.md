@@ -51,6 +51,8 @@ Compositions : `Reel`, `ReelSansMusique`, `ReelVoix`, `Post`, `Intro`.
 - Effacer des personnes d'une photo (si un jour demandé) : `tools/remove_people.py` (rembg + LaMa).
 
 ## Contrôle qualité avant d'envoyer
+0. La **toute première image** doit déjà montrer l'accroche (pas de fondu depuis le noir) : c'est l'aperçu dans le fil.
+   Le texte d'appel aux commentaires doit rester ≥ 3 s à l'écran. Couverture : `npm run render:cover`.
 1. Stills de chaque scène en 9:16 et 1:1 : rien de coupé, pas de retour à la ligne disgracieux.
 2. Transcrire la piste son du MP4 final avec Whisper : toute la voix doit être compréhensible.
 3. Je ne peux pas écouter : le dire honnêtement et demander l'avis du client sur la voix et la musique.

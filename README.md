@@ -6,10 +6,11 @@ Vidéos animées générées automatiquement avec [Remotion](https://www.remotio
 
 | Fichier | Format | Usage |
 |---|---|---|
-| `phoevents-reel.mp4` | 1080×1920 · 24 s | **Version principale** : Reel / TikTok, musique, sans voix |
-| `phoevents-reel-sans-musique.mp4` | 1080×1920 · 24 s | Pour ajouter un son tendance dans Instagram / TikTok |
+| `phoevents-reel.mp4` | 1080×1920 · 27 s | **Version principale** : Reel / TikTok, musique, sans voix |
+| `phoevents-reel-sans-musique.mp4` | 1080×1920 · 27 s | Pour ajouter un son tendance dans Instagram / TikTok |
 | `phoevents-reel-voix-homme.mp4` | 1080×1920 · 34 s | Variante avec voix off masculine |
-| `phoevents-post.mp4` | 1080×1080 · 24 s | Post Instagram / Facebook |
+| `phoevents-post.mp4` | 1080×1080 · 27 s | Post Instagram / Facebook |
+| `phoevents-reel-couverture.png` | 1080×1920 | Couverture du reel (contenu dans la zone 4:5 du profil) |
 | `phoevents-intro.mp4` | 1920×1080 · 4 s | Intro logo YouTube, écran d'événement |
 
 Concept « Tu choisis lequel ? » : accroche → 4 cadres d'exemple numérotés (mariage, anniversaire, baby shower,

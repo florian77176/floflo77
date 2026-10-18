@@ -1,5 +1,6 @@
 import React from 'react';
 import {Composition} from 'remotion';
+import {Cover} from './Cover';
 import {LogoIntro, Reel, ReelProps, reelDuration} from './Reel';
 import './fonts';
 
@@ -25,6 +26,8 @@ export const RemotionRoot: React.FC = () => (
     {reelComp('ReelVoix', {withMusic: true, withVoice: true}, 1080, 1920)}
     {/* Post carré Instagram / Facebook */}
     {reelComp('Post', {withMusic: true, withVoice: false}, 1080, 1080)}
+    {/* Couverture du reel (image fixe à choisir comme miniature) */}
+    <Composition id="Cover" component={Cover} durationInFrames={90} fps={30} width={1080} height={1920} />
     {/* Intro logo 16:9 */}
     <Composition id="Intro" component={LogoIntro} durationInFrames={120} fps={30} width={1920} height={1080} />
   </>

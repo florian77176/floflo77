@@ -15,13 +15,15 @@ export const useUnit = () => {
 export const goldGradient = `linear-gradient(100deg, ${colors.goldDark} 0%, ${colors.goldLight} 45%, ${colors.gold} 70%, ${colors.goldDark} 100%)`;
 
 // Fondu d'entrée/sortie commun à chaque scène
-export const SceneFade: React.FC<{children: React.ReactNode; duration: number; fadeOut?: boolean}> = ({
+// (fadeIn={false} pour la 1re scène : la toute première image doit déjà être lisible, c'est l'aperçu du reel)
+export const SceneFade: React.FC<{children: React.ReactNode; duration: number; fadeIn?: boolean; fadeOut?: boolean}> = ({
   children,
   duration,
+  fadeIn = true,
   fadeOut = true,
 }) => {
   const frame = useCurrentFrame();
-  const opacity = interpolate(frame, [0, 8, duration - 8, duration], [0, 1, 1, fadeOut ? 0 : 1], {
+  const opacity = interpolate(frame, [0, 8, duration - 8, duration], [fadeIn ? 0 : 1, 1, 1, fadeOut ? 0 : 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
@@ -29,9 +31,9 @@ export const SceneFade: React.FC<{children: React.ReactNode; duration: number; f
 };
 
 // Flash blanc façon appareil photo
-export const Flash: React.FC<{at?: number}> = ({at = 0}) => {
+export const Flash: React.FC<{at?: number; strength?: number}> = ({at = 0, strength = 0.9}) => {
   const frame = useCurrentFrame();
-  const opacity = interpolate(frame - at, [0, 2, 12], [0, 0.9, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const opacity = interpolate(frame - at, [0, 2, 12], [0, strength, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   return <AbsoluteFill style={{background: '#fff', opacity, pointerEvents: 'none'}} />;
 };
 

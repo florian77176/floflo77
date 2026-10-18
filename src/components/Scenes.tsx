@@ -67,23 +67,21 @@ const NumberBadge: React.FC<{n: number; size: number; at?: number}> = ({n, size,
 };
 
 // 1. Accroche : « Tu choisis lequel ? 1, 2, 3 ou 4 ? »
+// Le texte est lisible dès la toute première image (aperçu du reel dans le fil) puis « respire » sur le rythme.
 export const HookScene: React.FC = () => {
+  const frame = useCurrentFrame();
   const {unit, vertical} = useUnit();
-  const a = usePop(0);
-  const b = usePop(BEAT);
-  const c = usePop(2 * BEAT);
+  const settle = interpolate(frame, [0, 10], [1.08, 1], {extrapolateRight: 'clamp'});
+  const beatPulse = 1 + 0.03 * Math.exp(-(frame % BEAT) / 4);
+  const c = usePop(BEAT);
   return (
     <Stack gap={20}>
-      <Sfx name="whoosh" volume={0.6} />
       <Sfx name="pop" at={BEAT} volume={0.6} />
-      <Sfx name="pop" at={2 * BEAT} volume={0.6} />
-      <Reveal>
-        <Kicker>✦ {reel.kicker} ✦</Kicker>
-      </Reveal>
-      <div style={{transform: `scale(${a})`}}>
+      <Kicker>✦ {reel.kicker} ✦</Kicker>
+      <div style={{transform: `scale(${settle})`}}>
         <Title size={vertical ? 120 : 104}>{reel.hook[0]}</Title>
       </div>
-      <div style={{transform: `scale(${b}) rotate(${(1 - b) * -6}deg)`, marginTop: -20 * unit}}>
+      <div style={{transform: `scale(${settle * beatPulse}) rotate(-2deg)`, marginTop: -20 * unit}}>
         <Title size={vertical ? 150 : 128} italic gold>
           {reel.hook[1]}
         </Title>
@@ -174,10 +172,10 @@ export const RecapScene: React.FC = () => {
   const {unit, vertical} = useUnit();
   const cellW = vertical ? 400 : 420;
   const cellH = vertical ? 470 : 330;
-  const text = usePop(2 * BEAT);
+  const text = usePop(BEAT);
   return (
     <Stack gap={vertical ? 40 : 24}>
-      <Sfx name="sparkle" at={2 * BEAT} volume={0.6} />
+      <Sfx name="sparkle" at={BEAT} volume={0.6} />
       <div style={{display: 'grid', gridTemplateColumns: `repeat(2, ${cellW * unit}px)`, gap: `${30 * unit}px ${30 * unit}px`}}>
         {reel.templates.map((t, i) => (
           <RecapCell key={t.event} index={i} w={cellW} h={cellH} />
@@ -192,7 +190,7 @@ export const RecapScene: React.FC = () => {
   );
 };
 
-const RecapCell: React.FC<{index: number; w: number; h: number}> = ({index, w, h}) => {
+export const RecapCell: React.FC<{index: number; w: number; h: number}> = ({index, w, h}) => {
   const {unit} = useUnit();
   const t = reel.templates[index];
   const layout = t.layout as TemplateLayout;
@@ -322,7 +320,7 @@ export const CtaScene: React.FC = () => {
       >
         {musicCredit}
       </div>
-      <Flash />
+      <Flash strength={0.45} />
     </>
   );
 };

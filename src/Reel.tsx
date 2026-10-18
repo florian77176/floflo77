@@ -26,8 +26,8 @@ const STEPS: Step[] = [
     voice: `tpl-${t.style}` as VoiceKey,
     voiceAt: 10, // après le « whoosh » d'entrée du cadre
   })),
-  {id: 'recap', beats: 6, Comp: RecapScene, voice: 'recap', voiceAt: 4},
-  {id: 'prints', beats: 4, Comp: PrintScene, voice: 'prints', voiceAt: 4},
+  {id: 'recap', beats: 8, Comp: RecapScene, voice: 'recap', voiceAt: 4},
+  {id: 'prints', beats: 6, Comp: PrintScene, voice: 'prints', voiceAt: 4},
   {id: 'cta', beats: 10, Comp: CtaScene, voice: 'cta', voiceAt: 6},
 ];
 
@@ -71,7 +71,7 @@ export const Reel: React.FC<ReelProps> = ({withMusic, withVoice}) => {
       <Series>
         {scenes.map(({id, duration, Comp}, i) => (
           <Series.Sequence key={id} durationInFrames={duration}>
-            <SceneFade duration={duration} fadeOut={i === scenes.length - 1 ? false : id === 'hook' || id === 'recap' || id === 'prints'}>
+            <SceneFade duration={duration} fadeIn={i > 0} fadeOut={i === scenes.length - 1 ? false : id === 'hook' || id === 'recap' || id === 'prints'}>
               <Comp />
             </SceneFade>
           </Series.Sequence>
