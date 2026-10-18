@@ -20,55 +20,32 @@ export const brand = {
   },
 };
 
-export const promo = {
-  // Accroche synchronisée avec la voix (images où chaque mot apparaît, 30 images = 1 s)
-  hook: {
-    lead: 'Vous préparez',
-    cycle: ['un mariage ?', 'un anniversaire ?', 'une soirée ?'],
-    cycleAt: [22, 47, 72],
-    look: 'Regardez ça 👇',
-    lookAt: 96,
-  },
-  smile: 'Souriez !',
-  templatesTitle: 'Votre cadre, votre style',
-  // Exemples de cadres personnalisés (les emplacements photo restent vides pour que chacun s'imagine)
+// Reel « Tu choisis lequel ? » : court, rythmé, calé sur la musique, pensé pour Instagram / TikTok
+export const reel = {
+  kicker: 'Cadres photobooth',
+  hook: ['Tu choisis', 'lequel ?'],
+  hookSub: '1, 2, 3 ou 4 ? 👇',
+  // Les cadres d'exemple (emplacements photo vides pour que chacun s'imagine)
   templates: [
     {event: 'Mariage', style: 'mariage', layout: 'strip', title: 'Julie & Thomas', subtitle: '14 · 06 · 2027'},
     {event: 'Anniversaire', style: 'anniversaire', layout: 'grid', title: 'Les 30 ans de Léa', subtitle: 'Samedi 10 avril 2027'},
-    {event: 'Baptême', style: 'bapteme', layout: 'single', title: 'Baptême de Gabriel', subtitle: '8 mai 2027'},
     {event: 'Baby shower', style: 'babyshower', layout: 'duo', title: 'Bienvenue petite Rose', subtitle: 'Baby shower · 3 juillet 2027'},
     {event: 'Entreprise', style: 'entreprise', layout: 'logo', title: 'Soirée annuelle', subtitle: 'Votre entreprise · 2027'},
   ],
-  prints: {title: 'Imprimées sur place', subtitle: 'Vos invités repartent avec leurs souvenirs le soir même'},
-  included: {
-    title: 'Tout ce qu’il vous faut',
-    items: [
-      {icon: '📸', text: 'Photos numériques illimitées'},
-      {icon: '🖨️', text: 'Tirages imprimés sur place'},
-      {icon: '🎨', text: 'Cadre personnalisé à votre image'},
-      {icon: '📩', text: 'Vos photos envoyées sous 48h'},
-      {icon: '🚚', text: 'Livraison & installation'},
-      {icon: '✅', text: 'Matériel vérifié à chaque fois'},
-    ],
-  },
-  formulas: {
-    title: 'Nos formules',
-    items: [
-      {name: 'Digitale', price: '180 €', detail: 'Photos numériques illimitées', badge: ''},
-      {name: 'Signature', price: '280 €', detail: '+ 200 tirages imprimés', badge: 'La plus choisie'},
-      {name: 'Premium', price: '380 €', detail: '+ 400 tirages imprimés', badge: ''},
-    ],
-  },
-  review: {
-    score: '5,0 / 5',
-    source: 'avis Google',
-    quote: 'Le photobooth fut une très agréable surprise pour notre journée d’anniversaire',
-    author: 'Daniel T.',
-  },
-  cta: 'Réservez votre date',
+  recap: 'Commente ton numéro 👇',
+  prints: 'Imprimé sur place ✨',
+  price: 'Dès 180 €',
+  stars: '5,0 / 5 sur Google',
+  cta: 'Réserve ta date',
   ctaSub: 'Devis gratuit · réponse sous 24h',
 };
 
-// Crédit obligatoire de la musique (licence CC BY 4.0) : affiché en petit à la fin de la vidéo
-export const musicCredit = 'Musique : « Funky Chunk » Kevin MacLeod (incompetech.com) · CC BY 4.0';
+// Musique : « Funky Chunk » (117 BPM). On démarre sur sa partie la plus énergique et on coupe sur les temps.
+export const music = {
+  file: 'audio/funky-chunk.mp3',
+  startSec: 33.46, // début d'une phrase musicale (temps fort)
+  beatSec: 0.5108, // durée d'un temps
+};
 
+// Crédit obligatoire de la musique (licence CC BY 4.0)
+export const musicCredit = 'Musique : « Funky Chunk » Kevin MacLeod (incompetech.com) · CC BY 4.0';

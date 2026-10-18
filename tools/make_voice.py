@@ -18,26 +18,27 @@ from faster_whisper import WhisperModel
 
 OUT = os.path.join(os.path.dirname(__file__), '..', 'public', 'audio', 'voice')
 
-# Texte de la voix off (« Pho Events » se prononce « Pho Évente » : écrit « Fo Évente » pour la voix)
+# Texte de la voix off du reel (voix d'homme, tutoiement).
+# Écriture phonétique : « Pho Events » se dit « Pho Eveunte » -> écrit « Fo Éveunte ».
+# Éviter le mot « photos » au pluriel : la voix prononce le s (« photosse »).
 LINES = {
-    'hook': 'Vous préparez un mariage, un anniversaire ou une soirée ? Regardez ça !',
-    'smile': 'Et maintenant… souriez !',
-    'tpl-mariage': 'Pour votre mariage : une bandelette élégante, à vos deux prénoms.',
-    'tpl-anniversaire': 'Pour un anniversaire : quatre photos, et des étoiles plein les yeux !',
-    'tpl-bapteme': 'Pour un baptême : un grand portrait, tout en douceur.',
-    'tpl-babyshower': 'Pour une baby shower : un cadre tendre, aux couleurs de bébé.',
-    'tpl-entreprise': 'Et pour votre entreprise : votre logo, vos couleurs, votre image !',
-    'prints': 'Les photos sont imprimées sur place : vos invités repartent avec leur souvenir !',
-    'included': "Photos illimitées, livraison, installation : on s'occupe de tout !",
-    'formulas': 'Le tout, à partir de cent quatre-vingts euros seulement.',
-    'review': 'Et nos clients nous donnent cinq étoiles sur Google !',
-    'cta': 'Fo Évente : réservez votre date sur fo évente point F R. Devis gratuit, réponse en vingt-quatre heures !',
+    'hook': 'Tu prépares une fête ? Choisis ton cadre !',
+    'tpl-mariage': 'Numéro un : le mariage.',
+    'tpl-anniversaire': "Numéro deux : l'anniversaire.",
+    'tpl-babyshower': 'Numéro trois : la baby shower.',
+    'tpl-entreprise': "Numéro quatre : l'entreprise.",
+    'recap': 'Alors, tu choisis lequel ? Dis-le en commentaire !',
+    'prints': 'Et tout est imprimé sur place !',
+    'cta': 'Fo Éveunte, dès cent quatre-vingts euros. Réserve ta date sur fo éveunte point F R !',
 }
 
 # Ce que la transcription doit retrouver (sert à vérifier chaque prise)
 EXPECT = {
-    'formulas': 'le tout à partir de 180 euros seulement',
-    'cta': 'faux évente réservez votre date sur faux évente fr devis gratuit réponse en 24 heures',
+    'tpl-mariage': 'numéro 1 le mariage',
+    'tpl-anniversaire': "numéro 2 l'anniversaire",
+    'tpl-babyshower': 'numéro 3 la baby shower',
+    'tpl-entreprise': "numéro 4 l'entreprise",
+    'cta': 'faux éveunte dès 180 euros réserve ta date sur faux éveunte fr',
 }
 TRIES = 5
 # Voix « qui accroche » : plus expressive (exaggeration haute) et plus rythmée (cfg bas)

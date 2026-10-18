@@ -5,7 +5,7 @@ description: Créer, modifier ou régénérer les vidéos promo du photobooth Ph
 
 # Vidéos promo Pho Events
 
-Projet Remotion à la racine du dépôt. L'utilisatrice ne veut rien faire elle-même : on fait tout,
+Projet Remotion à la racine du dépôt. Le ou la propriétaire de Pho Events ne veut rien faire soi-même : on fait tout,
 on vérifie, on rend les MP4, on les envoie, on commit et on pousse.
 
 ## Identité de marque (reprise de phoevents.fr)
@@ -16,24 +16,28 @@ on vérifie, on rend les MP4, on les envoie, on commit et on pousse.
   Premium 380 € (+400 tirages). Livraison/installation à partir de 30 € (ne jamais dire « offerte »).
 - Avis Google 5,0/5. Ne rien inventer qui ne soit pas sur le site.
 
-## Choix validés par l'utilisatrice
+## Choix validés par le client
 - **Pas d'IA mise en avant** pour l'instant, **pas de vraies personnes** à l'écran :
   on montre des **cadres d'exemple avec emplacements photo vides** (silhouettes génériques) pour que
   chacun s'imagine son événement.
-- Les cadres doivent rester **assez longtemps** (≥ 4,5 s chacun) pour être bien vus.
-- **Voix off qui accroche** (question d'accroche), **musique et bruitages bas** sous la voix.
-- « Pho Events » se prononce **« Pho Évente »** (t final prononcé) : l'écrire « Fo Évente » dans le texte de la voix.
+- Vidéo **courte** (~24 s), pensée pour percer sur Instagram / TikTok : concept « Tu choisis lequel ? »,
+  cadres numérotés, « Commente ton numéro 👇 », coupes sur le rythme (117 BPM), tutoiement.
+- **Pas de compte à rebours 3-2-1** (pas apprécié).
+- Version principale **sans voix** (la voix IA féminine n'a pas plu). Variante avec **voix d'homme**
+  (référence Piper `fr_FR-tom-medium`). Éviter « photos » au pluriel dans la voix (la voix dit « photosse »).
+- « Pho Events » se prononce **« Pho Eveunte »** : l'écrire « Fo Éveunte » dans le texte de la voix.
 
 ## Où modifier quoi
 | Quoi | Fichier |
 |---|---|
-| Textes à l'écran, cadres d'exemple, formules, avis | `src/config.ts` |
+| Textes à l'écran, cadres d'exemple, prix, musique (début, tempo) | `src/config.ts` (`reel`, `music`) |
 | Phrases de la voix off | `tools/make_voice.py` (`LINES`, `EXPECT`) |
-| Ordre / durée des scènes, volume musique | `src/Promo.tsx` (`PLAN`, `musicVolume`) |
+| Ordre / durée des scènes (en temps musicaux), volume musique | `src/Reel.tsx` (`STEPS`, `musicVolume`) |
 | Scènes | `src/components/Scenes.tsx` · cadres : `src/components/Template.tsx` |
 | Bruitages | `tools/make_audio.py` → `public/audio/sfx-*.wav` (volume global `SFX_GAIN`) |
 
-Les scènes s'allongent automatiquement selon `public/audio/voice/durations.json`.
+Avec la voix, les scènes s'allongent (par temps entiers) selon `public/audio/voice/durations.json`.
+Compositions : `Reel`, `ReelSansMusique`, `ReelVoix`, `Post`, `Intro`.
 
 ## Outils (environnement cloud)
 - Rendu : `npm run render:all -- --browser-executable=/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell`
@@ -49,4 +53,4 @@ Les scènes s'allongent automatiquement selon `public/audio/voice/durations.json
 ## Contrôle qualité avant d'envoyer
 1. Stills de chaque scène en 9:16 et 1:1 : rien de coupé, pas de retour à la ligne disgracieux.
 2. Transcrire la piste son du MP4 final avec Whisper : toute la voix doit être compréhensible.
-3. Je ne peux pas écouter : le dire honnêtement et demander l'avis de l'utilisatrice sur la voix et la musique.
+3. Je ne peux pas écouter : le dire honnêtement et demander l'avis du client sur la voix et la musique.

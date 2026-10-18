@@ -6,30 +6,30 @@ Vidéos animées générées automatiquement avec [Remotion](https://www.remotio
 
 | Fichier | Format | Usage |
 |---|---|---|
-| `phoevents-story.mp4` | 1080×1920 · 68 s | Reel / Story Instagram, TikTok |
-| `phoevents-post.mp4` | 1080×1080 · 68 s | Post Instagram / Facebook |
+| `phoevents-reel.mp4` | 1080×1920 · 24 s | **Version principale** : Reel / TikTok, musique, sans voix |
+| `phoevents-reel-sans-musique.mp4` | 1080×1920 · 24 s | Pour ajouter un son tendance dans Instagram / TikTok |
+| `phoevents-reel-voix-homme.mp4` | 1080×1920 | Variante avec voix off masculine |
+| `phoevents-post.mp4` | 1080×1080 · 24 s | Post Instagram / Facebook |
 | `phoevents-intro.mp4` | 1920×1080 · 4 s | Intro logo YouTube, écran d'événement |
 
-Déroulé : accroche « Vous préparez un mariage, un anniversaire ou une soirée ? » → compte à rebours « Souriez ! » →
-5 cadres d'exemple avec emplacements photo, ~6 s chacun avec une phrase dédiée (mariage, anniversaire, baptême,
-baby shower, entreprise) → tirage qui sort de l'imprimante → tout ce qui est inclus → formules et prix →
-avis Google 5/5 → appel à l'action (phoevents.fr, téléphone, devis gratuit).
+Concept « Tu choisis lequel ? » : accroche → 4 cadres d'exemple numérotés (mariage, anniversaire, baby shower,
+entreprise) → récap des 4 + « Commente ton numéro 👇 » (pour faire réagir en commentaires) → tirage imprimé sur place →
+prix, avis Google, appel à l'action. Toutes les coupes tombent sur les temps de la musique (117 BPM).
 
-Voix off française (Chatterbox, licence MIT) générée par `tools/make_voice.py`, chaque phrase est vérifiée
-par transcription automatique. Musique : « Funky Chunk » de Kevin MacLeod (incompetech.com), licence CC BY 4.0 :
+Musique : « Funky Chunk » de Kevin MacLeod (incompetech.com), licence CC BY 4.0 :
 **mettre en description de la publication** « Musique : Funky Chunk – Kevin MacLeod (incompetech.com) – CC BY 4.0 ».
-La musique (volontairement basse) baisse encore quand la voix parle ; le son final est mis à -14 LUFS (`tools/master_audio.sh`). Bruitages originaux générés par `tools/make_audio.py`.
+Son final mis à -14 LUFS (`tools/master_audio.sh`). Bruitages originaux générés par `tools/make_audio.py`.
 
 ## Modifier les textes / couleurs
 
-Tout est dans `src/config.ts` (phrases, prix, avis, contact, couleurs, photos).
+Tout est dans `src/config.ts` (section `reel` : accroche, cadres, prix, appel à l'action ; section `music`).
 Le logo est dans `public/logo.png`, la musique et les bruitages dans `public/audio/`.
 
 ## Régénérer les vidéos
 
 ```bash
 npm install
-npm run render:all     # ou render:story / render:post / render:intro
+npm run render:all     # ou render:reel / render:sans-musique / render:voix / render:post / render:intro
 npm run studio         # aperçu en direct dans le navigateur
 ```
 

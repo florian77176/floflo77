@@ -1,6 +1,6 @@
 import React from 'react';
 import {AbsoluteFill, random, useCurrentFrame, useVideoConfig} from 'remotion';
-import {brand} from '../config';
+import {brand, music} from '../config';
 
 const {colors} = brand;
 
@@ -10,6 +10,9 @@ export const Background: React.FC = () => {
   const {width, height} = useVideoConfig();
   const unit = Math.min(width, height) / 1080;
 
+  // halo qui « respire » sur chaque temps de la musique
+  const beatF = music.beatSec * 30;
+  const pulse = Math.exp(-(frame % beatF) / 5);
   const glowX = 50 + Math.sin(frame / 80) * 25;
   const glowY = 45 + Math.cos(frame / 100) * 20;
 
@@ -25,7 +28,7 @@ export const Background: React.FC = () => {
     <AbsoluteFill style={{background: colors.background, overflow: 'hidden'}}>
       <AbsoluteFill
         style={{
-          background: `radial-gradient(circle at ${glowX}% ${glowY}%, ${colors.gold}2A 0%, transparent 50%), radial-gradient(circle at ${100 - glowX}% ${100 - glowY}%, ${colors.backgroundAlt} 0%, transparent 60%)`,
+          background: `radial-gradient(circle at ${glowX}% ${glowY}%, ${colors.gold}${Math.round(0x22 + pulse * 0x22).toString(16)} 0%, transparent ${50 + pulse * 6}%), radial-gradient(circle at ${100 - glowX}% ${100 - glowY}%, ${colors.backgroundAlt} 0%, transparent 60%)`,
         }}
       />
       {sparks.map((p, i) => (
