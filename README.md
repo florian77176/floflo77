@@ -1,8 +1,11 @@
-# PhoEvents — Vidéos motion design
+# Vidéos réseaux sociaux — Pho Events & Funny Loisirs
 
-Vidéos animées générées automatiquement avec [Remotion](https://www.remotion.dev).
+Vidéos animées générées automatiquement avec [Remotion](https://www.remotion.dev), pour deux marques :
+**Pho Events** (photobooth, phoevents.fr) et **Funny Loisirs** (structures gonflables, funnyloisirs.fr).
 
-## Vidéos prêtes (dossier `videos/`, rangées par réseau)
+# Pho Events
+
+## Vidéos prêtes (dossier `videos/phoevents/`, rangées par réseau)
 
 Chaque version place le texte dans la **zone visible** du réseau (hors boutons, légende, barre de profil).
 
@@ -37,7 +40,7 @@ Le logo est dans `public/logo.png`, la musique et les bruitages dans `public/aud
 
 ```bash
 npm install
-npm run render:all     # tout, rangé par réseau (voir tools/render_all.sh)
+npm run render:all     # les deux marques (ou render:phoevents / render:funny)
 npm run studio         # aperçu en direct dans le navigateur
 ```
 
@@ -62,3 +65,18 @@ pip install --index-url https://download.pytorch.org/whl/cpu torch torchvision
 pip install -r tools/requirements.txt
 python tools/remove_people.py photo.jpg photo-vide.jpg --shadow
 ```
+
+# Funny Loisirs
+
+Reel « Laquelle tu choisis pour ta fête ? 🎈 » (~27 s, 117 BPM) : les 4 structures (photos du site détourées par IA)
+**se gonflent** à l'écran une par une avec confettis, badge et prix (LEGO géante dès 450 €, Château Safari dès 280 €,
+Puissance 4 basket dès 180 €, Curling gonflable dès 200 €) → chute « Ou… les 4 ? 😏 » + « Commente ton numéro 👇 » →
+occasions → 5/5 (25 avis Google), devis gratuit 24h, appel à l'action. Couleurs et police (Baloo 2) du site.
+
+Fichiers dans `videos/funnyloisirs/` : mêmes formats et mêmes noms que pour Pho Events (instagram/reel, reel-sans-musique,
+story avec place pour un sondage, post-4x5, couverture ; tiktok ; snapchat ; facebook).
+
+Musique : « Who Likes to Party » de Kevin MacLeod (incompetech.com), licence CC BY 4.0 : **mettre en description**
+« Musique : Who Likes to Party – Kevin MacLeod (incompetech.com) – CC BY 4.0 ».
+
+Modifier : `src/funny/config.ts` (structures, prix, textes, musique). Images détourées : `public/funny/structures/`.

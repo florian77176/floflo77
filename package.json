@@ -5,6 +5,8 @@
   "description": "Vidéos motion design PhoEvents générées avec Remotion",
   "scripts": {
     "studio": "remotion studio",
+    "render:phoevents": "sh tools/render_phoevents.sh",
+    "render:funny": "sh tools/render_funny.sh",
     "render:all": "sh tools/render_all.sh"
   },
   "dependencies": {

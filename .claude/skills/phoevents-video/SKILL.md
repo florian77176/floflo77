@@ -43,8 +43,8 @@ Zones visibles par réseau : `SAFE_ZONES` dans `src/components/ui.tsx`. Montage 
 avec place pour un sticker sondage. Facebook réutilise les fichiers Instagram.
 
 ## Outils (environnement cloud)
-- Rendu : `sh tools/render_all.sh /opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell`
-  (sortie dans `videos/<réseau>/`). Vérifier avec `npx remotion still <Story|Post> out/x.png --frame=N` et regarder l'image.
+- Rendu : `sh tools/render_phoevents.sh /opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell`
+  (sortie dans `videos/phoevents/<réseau>/`). Vérifier avec `npx remotion still <Story|Post> out/x.png --frame=N` et regarder l'image.
 - Voix : venv avec `torch==2.6.0` (index CPU) + `chatterbox-tts` + `faster-whisper`.
   Référence d'accent français : générer ~10 s avec Piper `fr_FR-siwis-medium`
   (huggingface.co/rhasspy/piper-voices), puis `python tools/make_voice.py ref.wav [clé…]`.
@@ -55,7 +55,7 @@ avec place pour un sticker sondage. Facebook réutilise les fichiers Instagram.
 
 ## Contrôle qualité avant d'envoyer
 0. La **toute première image** doit déjà montrer l'accroche (pas de fondu depuis le noir) : c'est l'aperçu dans le fil.
-   Le texte d'appel aux commentaires doit rester ≥ 3 s à l'écran. Couverture : `npm run render:cover`.
+   Le texte d'appel aux commentaires doit rester ≥ 3 s à l'écran. Couverture : composition `Cover`.
 1. Stills de chaque scène en 9:16 et 1:1 : rien de coupé, pas de retour à la ligne disgracieux.
 2. Transcrire la piste son du MP4 final avec Whisper : toute la voix doit être compréhensible.
 3. Je ne peux pas écouter : le dire honnêtement et demander l'avis du client sur la voix et la musique.

@@ -211,6 +211,34 @@ def sfx():
     save('sfx-sparkle.wav', sp)
 
 
+def sfx_funny():
+    # gonflage : souffle qui monte (bruit filtré dont la bande s'élève) + petit sifflement
+    d = 0.9
+    tt = t(d)
+    n = rng.standard_normal(len(tt))
+    out = np.zeros_like(n)
+    steps = 12
+    for k in range(steps):
+        seg = slice(k * len(tt) // steps, (k + 1) * len(tt) // steps)
+        lo = 250 + 120 * k
+        out[seg] = bp(n, lo, lo * 3)[seg]
+    whistle = np.sin(2 * np.pi * np.cumsum(300 + 500 * (tt / d) ** 1.5) / SR) * 0.15
+    env = np.minimum(1, tt / 0.08) * np.minimum(1, (d - tt) / 0.06)
+    save('sfx-inflate.wav', (out * 0.8 + whistle) * env)
+    # boing : sinus qui vibre et descend
+    tt = t(0.6)
+    f = 180 + 220 * np.exp(-tt * 6) * (1 + 0.35 * np.sin(2 * np.pi * 14 * tt))
+    save('sfx-boing.wav', np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt * 5))
+    # confettis : claquement + crépitement
+    tt = t(0.9)
+    pop = hp(rng.standard_normal(len(tt)), 800) * np.exp(-tt * 60)
+    crackle = np.zeros(len(tt))
+    for _ in range(40):
+        at = rng.uniform(0.02, 0.7)
+        add(crackle, hp(rng.standard_normal(int(0.012 * SR)), 3000) * rng.uniform(0.1, 0.4), at)
+    save('sfx-confetti.wav', pop + crackle)
+
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     if '--music' in sys.argv:
@@ -218,4 +246,5 @@ if __name__ == '__main__':
         l, r = music(dur)
         save('music.wav', l, r)
     sfx()
+    sfx_funny()
     print('ok', sorted(os.listdir(OUT)))
