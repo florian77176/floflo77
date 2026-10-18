@@ -21,15 +21,22 @@ export const brand = {
 };
 
 export const promo = {
-  hook: ['Et si vos invités', 'devenaient', 'des stars ?'],
+  hook: ['Et si vos invités', 'changeaient', 'de monde ?'],
   themesTitle: 'Fonds animés par IA',
   themes: [
-    {photo: 'photos/boxe.jpg', label: 'Champions de boxe', emoji: '🥊'},
-    {photo: 'photos/film-noir.jpg', label: 'Héros de film noir', emoji: '🎬'},
-    {photo: 'photos/safari.jpg', label: 'Aventuriers en safari', emoji: '🦒'},
+    {decor: 'decors/boxe.jpg', label: 'Le ring de boxe', emoji: '🥊'},
+    {decor: 'decors/safari.jpg', label: 'Le safari', emoji: '🦒'},
+    {decor: 'decors/film-noir.jpg', label: 'Le film noir', emoji: '🎬'},
   ],
-  prints: {photo: 'photos/tirages.jpg', title: 'Imprimées sur place', subtitle: 'Vos invités repartent avec leurs souvenirs le soir même'},
-  custom: {photo: 'photos/famille.jpg', title: 'Un cadre à votre image', subtitle: 'Vos prénoms · votre date · vos couleurs'},
+  templatesTitle: 'Un cadre à votre image',
+  // Exemples de cadres personnalisés montrés dans la vidéo
+  templates: [
+    {event: 'Mariage', style: 'mariage', title: 'Julie & Thomas', subtitle: '14 juin 2027', decor: 'decors/film-noir-2.jpg'},
+    {event: 'Anniversaire', style: 'anniversaire', title: 'Les 30 ans de Léa', subtitle: 'Samedi 10 avril 2027', decor: 'decors/boxe.jpg'},
+    {event: 'Baptême', style: 'bapteme', title: 'Baptême de Gabriel', subtitle: '8 mai 2027', decor: 'decors/safari.jpg'},
+    {event: 'Entreprise', style: 'entreprise', title: 'Soirée annuelle', subtitle: 'Votre logo · vos couleurs', decor: 'decors/film-noir.jpg'},
+  ],
+  prints: {title: 'Imprimées sur place', subtitle: 'Vos invités repartent avec leurs souvenirs le soir même'},
   review: {
     score: '5,0 / 5',
     source: 'avis Google',

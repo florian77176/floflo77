@@ -1,8 +1,9 @@
 import React from 'react';
-import {interpolate, Sequence, spring, useCurrentFrame, useVideoConfig} from 'remotion';
+import {Img, interpolate, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {brand, promo} from '../config';
 import {sans, serif} from '../fonts';
-import {Flash, goldGradient, Kicker, Logo, PrintPhoto, Reveal, Title, useUnit} from './ui';
+import {Template} from './Template';
+import {Flash, goldGradient, Kicker, Logo, Reveal, Title, useUnit} from './ui';
 
 const {colors} = brand;
 
@@ -34,37 +35,66 @@ export const HookScene: React.FC = () => {
   );
 };
 
-// 2. Les fonds IA : une photo par thème, avec flash à chaque changement
-export const THEME_DURATION = 55;
+// 2. Les fonds IA : compte à rebours 3-2-1, flash, puis le décor apparaît
+export const THEME_DURATION = 60;
 export const ThemesScene: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const {unit, vertical} = useUnit();
+  const w = vertical ? 820 : 900;
   return (
     <Stack gap={vertical ? 60 : 30}>
       <Reveal>
         <Kicker>✦ {promo.themesTitle} ✦</Kicker>
       </Reveal>
-      <div style={{position: 'relative', width: '100%', height: (vertical ? 1000 : 640) * unit}}>
+      <div style={{position: 'relative', width: w * unit, height: ((w * 2) / 3) * unit + 140 * unit}}>
         {promo.themes.map((t, i) => {
           const from = i * THEME_DURATION;
-          const portrait = t.photo.includes('film-noir');
-          const w = portrait ? (vertical ? 540 : 380) : vertical ? 800 : 760;
-          const labelIn = spring({frame: frame - from - 10, fps, config: {damping: 200}});
+          const local = frame - from;
+          const count = local < 24 ? 3 - Math.floor(local / 8) : 0;
+          const countScale = 1.6 - (local % 8) / 10;
+          const shown = local >= 24;
+          const zoom = interpolate(local, [24, THEME_DURATION + 20], [1.15, 1.0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+          const labelIn = spring({frame: local - 30, fps, config: {damping: 200}});
           return (
             <Sequence key={t.label} from={from} durationInFrames={i === promo.themes.length - 1 ? Infinity : THEME_DURATION} layout="none">
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 40 * unit,
-                }}
-              >
-                <PrintPhoto src={t.photo} width={w} rotate={i % 2 ? 3 : -3} />
+              <div style={{position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 40 * unit}}>
+                <div
+                  style={{
+                    width: w * unit,
+                    height: ((w * 2) / 3) * unit,
+                    borderRadius: 16 * unit,
+                    overflow: 'hidden',
+                    position: 'relative',
+                    border: `${4 * unit}px solid ${colors.gold}`,
+                    boxShadow: `0 ${30 * unit}px ${80 * unit}px rgba(0,0,0,0.6), 0 0 ${60 * unit}px ${colors.gold}44`,
+                    background: '#000',
+                  }}
+                >
+                  {shown && (
+                    <Img src={staticFile(t.decor)} style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${zoom})`}} />
+                  )}
+                  {count > 0 && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontFamily: sans,
+                        fontWeight: 900,
+                        fontSize: 260 * unit,
+                        color: colors.cream,
+                        transform: `scale(${countScale})`,
+                        opacity: 1 - (local % 8) / 10,
+                      }}
+                    >
+                      {count}
+                    </div>
+                  )}
+                  <Flash at={24} />
+                </div>
                 <div
                   style={{
                     opacity: labelIn,
@@ -80,7 +110,6 @@ export const ThemesScene: React.FC = () => {
                   {t.emoji} {t.label}
                 </div>
               </div>
-              <Flash />
             </Sequence>
           );
         })}
@@ -89,30 +118,98 @@ export const ThemesScene: React.FC = () => {
   );
 };
 
-// 3 & 4. Photo + titre + sous-titre (impressions, cadre personnalisé)
-export const FeatureScene: React.FC<{photo: string; title: string; subtitle: string; rotate?: number}> = ({
-  photo,
-  title,
-  subtitle,
-  rotate = 2,
-}) => {
+// 3. Cadres personnalisés : un exemple par type d'événement
+export const TEMPLATE_DURATION = 55;
+export const TemplatesScene: React.FC = () => {
+  const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
   const {unit, vertical} = useUnit();
-  const portrait = photo.includes('tirages');
-  const w = portrait ? (vertical ? 560 : 380) : vertical ? 800 : 640;
+  const w = vertical ? 820 : 760;
   return (
-    <Stack gap={vertical ? 60 : 36}>
-      <PrintPhoto src={photo} width={w} rotate={rotate} />
-      <Reveal delay={12}>
+    <Stack gap={vertical ? 50 : 26}>
+      <Reveal>
+        <Kicker>✦ {promo.templatesTitle} ✦</Kicker>
+      </Reveal>
+      <div style={{position: 'relative', width: w * unit, height: ((w * 2) / 3) * unit + 150 * unit}}>
+        {promo.templates.map((t, i) => {
+          const from = i * TEMPLATE_DURATION;
+          const local = frame - from;
+          const inS = spring({frame: local, fps, config: {damping: 14, stiffness: 120}});
+          const chipIn = spring({frame: local - 4, fps, config: {damping: 200}});
+          return (
+            <Sequence key={t.event} from={from} durationInFrames={i === promo.templates.length - 1 ? Infinity : TEMPLATE_DURATION} layout="none">
+              <div style={{position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 36 * unit}}>
+                <div
+                  style={{
+                    padding: `${12 * unit}px ${36 * unit}px`,
+                    borderRadius: 999,
+                    background: goldGradient,
+                    fontFamily: sans,
+                    fontWeight: 800,
+                    fontSize: 34 * unit,
+                    color: colors.background,
+                    textTransform: 'uppercase',
+                    letterSpacing: 3 * unit,
+                    opacity: chipIn,
+                    transform: `translateY(${(1 - chipIn) * -20}px)`,
+                  }}
+                >
+                  {t.event}
+                </div>
+                <div style={{transform: `translateX(${(1 - inS) * 120}%) rotate(${(1 - inS) * 8 + (i % 2 ? 1.5 : -1.5)}deg)`}}>
+                  <Template style={t.style as any} title={t.title} subtitle={t.subtitle} decor={t.decor} width={w} typeFrom={10} />
+                </div>
+              </div>
+            </Sequence>
+          );
+        })}
+      </div>
+    </Stack>
+  );
+};
+
+// 4. Le tirage sort de l'imprimante
+export const PrintScene: React.FC = () => {
+  const frame = useCurrentFrame();
+  const {unit, vertical} = useUnit();
+  const w = vertical ? 700 : 560;
+  const h = (w * 2) / 3;
+  const out = interpolate(frame, [8, 55], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const t = promo.templates[0];
+  return (
+    <Stack gap={vertical ? 60 : 30}>
+      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+        {/* fente de l'imprimante */}
+        <div
+          style={{
+            width: (w + 80) * unit,
+            height: 70 * unit,
+            borderRadius: 18 * unit,
+            background: `linear-gradient(180deg, #3a362f, #1d1b17)`,
+            border: `${2 * unit}px solid ${colors.gold}66`,
+            position: 'relative',
+            zIndex: 2,
+            boxShadow: `0 ${10 * unit}px ${30 * unit}px rgba(0,0,0,0.6)`,
+          }}
+        >
+          <div style={{position: 'absolute', left: 40 * unit, right: 40 * unit, bottom: 16 * unit, height: 8 * unit, borderRadius: 4, background: '#000'}} />
+        </div>
+        <div style={{height: (h + 40) * unit, overflow: 'hidden', marginTop: -24 * unit, paddingLeft: 30 * unit, paddingRight: 30 * unit}}>
+          <div style={{transform: `translateY(${(out - 1) * 100}%)`, paddingTop: 10 * unit}}>
+            <Template style={t.style as any} title={t.title} subtitle={t.subtitle} decor={t.decor} width={w} typeFrom={-100} />
+          </div>
+        </div>
+      </div>
+      <Reveal delay={40}>
         <Title size={vertical ? 84 : 70} italic gold>
-          {title}
+          {promo.prints.title}
         </Title>
       </Reveal>
-      <Reveal delay={18}>
+      <Reveal delay={46}>
         <div style={{fontFamily: sans, fontWeight: 500, fontSize: (vertical ? 38 : 32) * unit, color: colors.muted, textAlign: 'center', maxWidth: (vertical ? 760 : 860) * unit}}>
-          {subtitle}
+          {promo.prints.subtitle}
         </div>
       </Reveal>
-      <Flash />
     </Stack>
   );
 };

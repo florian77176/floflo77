@@ -2,15 +2,15 @@ import React from 'react';
 import {AbsoluteFill, Series} from 'remotion';
 import {promo} from './config';
 import {Background} from './components/Background';
-import {CtaScene, FeatureScene, HookScene, OfferScene, ReviewScene, THEME_DURATION, ThemesScene} from './components/Scenes';
+import {CtaScene, HookScene, OfferScene, PrintScene, ReviewScene, TEMPLATE_DURATION, TemplatesScene, THEME_DURATION, ThemesScene} from './components/Scenes';
 import {Logo, SceneFade} from './components/ui';
 
 // Durées des scènes (30 images = 1 seconde)
 const SCENES = {
   hook: 70,
   themes: THEME_DURATION * promo.themes.length + 15,
-  prints: 95,
-  custom: 95,
+  templates: TEMPLATE_DURATION * promo.templates.length + 25,
+  prints: 110,
   review: 110,
   offer: 100,
   cta: 150,
@@ -27,11 +27,11 @@ export const Promo: React.FC = () => (
       <Series.Sequence durationInFrames={SCENES.themes}>
         <SceneFade duration={SCENES.themes}><ThemesScene /></SceneFade>
       </Series.Sequence>
-      <Series.Sequence durationInFrames={SCENES.prints}>
-        <SceneFade duration={SCENES.prints}><FeatureScene {...promo.prints} rotate={-2} /></SceneFade>
+      <Series.Sequence durationInFrames={SCENES.templates}>
+        <SceneFade duration={SCENES.templates}><TemplatesScene /></SceneFade>
       </Series.Sequence>
-      <Series.Sequence durationInFrames={SCENES.custom}>
-        <SceneFade duration={SCENES.custom}><FeatureScene {...promo.custom} rotate={2} /></SceneFade>
+      <Series.Sequence durationInFrames={SCENES.prints}>
+        <SceneFade duration={SCENES.prints}><PrintScene /></SceneFade>
       </Series.Sequence>
       <Series.Sequence durationInFrames={SCENES.review}>
         <SceneFade duration={SCENES.review}><ReviewScene /></SceneFade>

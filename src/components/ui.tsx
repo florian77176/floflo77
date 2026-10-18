@@ -92,37 +92,6 @@ export const Kicker: React.FC<{children: React.ReactNode}> = ({children}) => {
   );
 };
 
-// Photo façon tirage photobooth : tombe en tournant, bordure crème, léger zoom continu
-export const PrintPhoto: React.FC<{src: string; width: number; rotate?: number; delay?: number}> = ({
-  src,
-  width,
-  rotate = -3,
-  delay = 0,
-}) => {
-  const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
-  const {unit} = useUnit();
-  const drop = spring({frame: frame - delay, fps, config: {damping: 13, stiffness: 110}});
-  const zoom = interpolate(frame, [0, 120], [1.0, 1.08]);
-  return (
-    <div
-      style={{
-        width: width * unit,
-        padding: 14 * unit,
-        background: colors.cream,
-        borderRadius: 6 * unit,
-        boxShadow: `0 ${30 * unit}px ${80 * unit}px rgba(0,0,0,0.6), 0 0 ${60 * unit}px ${colors.gold}33`,
-        transform: `translateY(${(1 - drop) * -140}%) rotate(${rotate + (1 - drop) * 18}deg) scale(${0.8 + drop * 0.2})`,
-        opacity: Math.min(1, drop * 2),
-      }}
-    >
-      <div style={{overflow: 'hidden', borderRadius: 2 * unit}}>
-        <Img src={staticFile(src)} style={{width: '100%', display: 'block', transform: `scale(${zoom})`}} />
-      </div>
-    </div>
-  );
-};
-
 export const Logo: React.FC<{size: number; delay?: number}> = ({size, delay = 0}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
