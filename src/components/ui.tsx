@@ -1,15 +1,34 @@
-import React from 'react';
+import React, {createContext, useContext} from 'react';
 import {AbsoluteFill, Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {brand} from '../config';
 import {sans, serif} from '../fonts';
 
 const {colors} = brand;
 
+// Marges à laisser libres (en px) : zones recouvertes par l'interface de chaque réseau
+// (boutons, légende, barre de profil…). Le contenu est centré et dimensionné dans la zone restante.
+export type Safe = {top: number; right: number; bottom: number; left: number};
+export const SAFE_ZONES: Record<string, Safe> = {
+  none: {top: 0, right: 0, bottom: 0, left: 0},
+  instagram: {top: 220, right: 110, bottom: 420, left: 110},
+  tiktok: {top: 180, right: 130, bottom: 480, left: 130},
+  snapchat: {top: 170, right: 110, bottom: 380, left: 110},
+  story: {top: 250, right: 60, bottom: 330, left: 60},
+  feed: {top: 40, right: 40, bottom: 40, left: 40},
+};
+export const SafeContext = createContext<Safe>(SAFE_ZONES.none);
+
 export const useUnit = () => {
   const {width, height} = useVideoConfig();
-  const vertical = height > width;
-  // En vertical (téléphone) on grossit tout de 20 % pour la lisibilité
-  return {unit: (Math.min(width, height) / 1080) * (vertical ? 1.2 : 1), vertical};
+  const safe = useContext(SafeContext);
+  const areaW = width - safe.left - safe.right;
+  const areaH = height - safe.top - safe.bottom;
+  // « vertical » = format téléphone 9:16 ; le 4:5 et le carré utilisent la mise en page compacte
+  const vertical = height / width > 1.5;
+  // En 9:16 on grossit de 20 % pour la lisibilité (référence : 1080 px de large sans marge),
+  // en 4:5 de 10 % (un peu plus de hauteur que le carré)
+  const boost = vertical ? 1.2 : height / width > 1.2 ? 1.1 : 1;
+  return {unit: (Math.min(areaW, areaH) / 1080) * boost, vertical};
 };
 
 export const goldGradient = `linear-gradient(100deg, ${colors.goldDark} 0%, ${colors.goldLight} 45%, ${colors.gold} 70%, ${colors.goldDark} 100%)`;
@@ -34,7 +53,8 @@ export const SceneFade: React.FC<{children: React.ReactNode; duration: number; f
 export const Flash: React.FC<{at?: number; strength?: number}> = ({at = 0, strength = 0.9}) => {
   const frame = useCurrentFrame();
   const opacity = interpolate(frame - at, [0, 2, 12], [0, strength, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
-  return <AbsoluteFill style={{background: '#fff', opacity, pointerEvents: 'none'}} />;
+  // position fixe : le flash couvre tout l'écran, même si la scène est dans une zone réduite
+  return <div style={{position: 'fixed', inset: 0, background: '#fff', opacity, pointerEvents: 'none'}} />;
 };
 
 // Texte révélé de bas en haut derrière un masque

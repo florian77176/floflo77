@@ -2,16 +2,23 @@
 
 Vidéos animées générées automatiquement avec [Remotion](https://www.remotion.dev).
 
-## Vidéos prêtes (dossier `videos/`)
+## Vidéos prêtes (dossier `videos/`, rangées par réseau)
 
-| Fichier | Format | Usage |
-|---|---|---|
-| `phoevents-reel.mp4` | 1080×1920 · 27 s | **Version principale** : Reel / TikTok, musique, sans voix |
-| `phoevents-reel-sans-musique.mp4` | 1080×1920 · 27 s | Pour ajouter un son tendance dans Instagram / TikTok |
-| `phoevents-reel-voix-homme.mp4` | 1080×1920 · 34 s | Variante avec voix off masculine |
-| `phoevents-post.mp4` | 1080×1080 · 27 s | Post Instagram / Facebook |
-| `phoevents-reel-couverture.png` | 1080×1920 | Couverture du reel (contenu dans la zone 4:5 du profil) |
-| `phoevents-intro.mp4` | 1920×1080 · 4 s | Intro logo YouTube, écran d'événement |
+Chaque version place le texte dans la **zone visible** du réseau (hors boutons, légende, barre de profil).
+
+| Réseau | Fichier | Format | Où le publier |
+|---|---|---|---|
+| Instagram | `instagram/reel.mp4` | 9:16 · 27 s | Reel |
+| Instagram | `instagram/reel-sans-musique.mp4` | 9:16 · 27 s | Reel avec un son tendance ajouté dans l'appli |
+| Instagram | `instagram/story.mp4` | 9:16 · 17 s | Story (+ sticker Sondage 1/2/3/4) |
+| Instagram | `instagram/post-4x5.mp4` | 4:5 · 27 s | Publication dans le fil |
+| Instagram | `instagram/couverture.png` | 9:16 | Couverture du Reel |
+| TikTok | `tiktok/tiktok.mp4` | 9:16 · 27 s | Vidéo TikTok |
+| TikTok | `tiktok/tiktok-sans-musique.mp4` | 9:16 · 27 s | Avec un son tendance TikTok |
+| Snapchat | `snapchat/spotlight.mp4` | 9:16 · 27 s | Spotlight |
+| Snapchat | `snapchat/story.mp4` | 9:16 · 17 s | Story |
+| Facebook | `facebook/reel.mp4`, `story.mp4`, `post-4x5.mp4` | 9:16 / 4:5 | Reel, Story, fil |
+| Bonus | `bonus/reel-voix-homme.mp4`, `bonus/intro-logo.mp4` | 9:16 / 16:9 | Variante voix d'homme, intro logo |
 
 Concept « Tu choisis lequel ? » : accroche → 4 cadres d'exemple numérotés (mariage, anniversaire, baby shower,
 entreprise) → récap des 4 + « Commente ton numéro 👇 » (pour faire réagir en commentaires) → tirage imprimé sur place →
@@ -30,7 +37,7 @@ Le logo est dans `public/logo.png`, la musique et les bruitages dans `public/aud
 
 ```bash
 npm install
-npm run render:all     # ou render:reel / render:sans-musique / render:voix / render:post / render:intro
+npm run render:all     # tout, rangé par réseau (voir tools/render_all.sh)
 npm run studio         # aperçu en direct dans le navigateur
 ```
 

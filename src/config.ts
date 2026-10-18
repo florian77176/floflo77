@@ -33,6 +33,8 @@ export const reel = {
     {event: 'Entreprise', style: 'entreprise', layout: 'logo', title: 'Soirée annuelle', subtitle: 'Votre entreprise · 2027'},
   ],
   recap: 'Commente ton numéro 👇',
+  // version story : on laisse de la place pour un sticker « Sondage » 1 / 2 / 3 / 4
+  storyRecap: 'Vote dans le sondage 👇',
   prints: 'Imprimé sur place ✨',
   price: 'Dès 180 €',
   stars: '5,0 / 5 sur Google',

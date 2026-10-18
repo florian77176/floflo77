@@ -37,11 +37,14 @@ on vérifie, on rend les MP4, on les envoie, on commit et on pousse.
 | Bruitages | `tools/make_audio.py` → `public/audio/sfx-*.wav` (volume global `SFX_GAIN`) |
 
 Avec la voix, les scènes s'allongent (par temps entiers) selon `public/audio/voice/durations.json`.
-Compositions : `Reel`, `ReelSansMusique`, `ReelVoix`, `Post`, `Intro`.
+Compositions par réseau (`src/Root.tsx`) : `Instagram-Reel`, `Instagram-Reel-SansMusique`, `Instagram-Story`,
+`Feed-4x5`, `TikTok`, `TikTok-SansMusique`, `Snapchat-Spotlight`, `Snapchat-Story`, `Reel-VoixHomme`, `Cover`, `Intro`.
+Zones visibles par réseau : `SAFE_ZONES` dans `src/components/ui.tsx`. Montage `story` (~17 s, < 20 s pour Facebook)
+avec place pour un sticker sondage. Facebook réutilise les fichiers Instagram.
 
 ## Outils (environnement cloud)
-- Rendu : `npm run render:all -- --browser-executable=/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell`
-  (sortie dans `videos/`). Vérifier avec `npx remotion still <Story|Post> out/x.png --frame=N` et regarder l'image.
+- Rendu : `sh tools/render_all.sh /opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell`
+  (sortie dans `videos/<réseau>/`). Vérifier avec `npx remotion still <Story|Post> out/x.png --frame=N` et regarder l'image.
 - Voix : venv avec `torch==2.6.0` (index CPU) + `chatterbox-tts` + `faster-whisper`.
   Référence d'accent français : générer ~10 s avec Piper `fr_FR-siwis-medium`
   (huggingface.co/rhasspy/piper-voices), puis `python tools/make_voice.py ref.wav [clé…]`.

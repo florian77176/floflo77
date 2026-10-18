@@ -13,6 +13,8 @@ export const BEAT = music.beatSec * 30;
 // Les bruitages restent discrets, et encore plus quand la voix off parle
 const SFX_GAIN = 0.45;
 export const VoiceContext = createContext(false);
+// Montage : « full » (reel complet) ou « story » (version courte avec place pour un sondage)
+export const CutContext = createContext<'full' | 'story'>('full');
 
 // Effet sonore déclenché à une image donnée de la scène
 export const Sfx: React.FC<{name: string; at?: number; volume?: number}> = ({name, at = 0, volume = 0.8}) => {
@@ -170,8 +172,9 @@ export const makeTemplateScene = (index: number): React.FC => () => {
 // 3. Récap : les 4 cadres côte à côte, numérotés → « Commente ton numéro »
 export const RecapScene: React.FC = () => {
   const {unit, vertical} = useUnit();
+  const story = useContext(CutContext) === 'story';
   const cellW = vertical ? 400 : 420;
-  const cellH = vertical ? 470 : 330;
+  const cellH = vertical ? (story ? 400 : 470) : 330;
   const text = usePop(BEAT);
   return (
     <Stack gap={vertical ? 40 : 24}>
@@ -183,9 +186,11 @@ export const RecapScene: React.FC = () => {
       </div>
       <div style={{transform: `scale(${text})`}}>
         <Title size={vertical ? 80 : 64} italic gold>
-          {reel.recap}
+          {story ? reel.storyRecap : reel.recap}
         </Title>
       </div>
+      {/* espace libre pour poser le sticker sondage dans Instagram / Facebook */}
+      {story && <div style={{height: 230 * unit}} />}
     </Stack>
   );
 };
@@ -252,7 +257,7 @@ export const PrintScene: React.FC = () => {
 // 5. Prix + avis + appel à l'action, chaque élément arrive sur un temps
 export const CtaScene: React.FC = () => {
   const frame = useCurrentFrame();
-  const {unit, vertical, height} = {...useUnit(), ...useVideoConfig()};
+  const {unit, vertical} = useUnit();
   const price = usePop(BEAT);
   const stars = usePop(2 * BEAT);
   const btn = usePop(3 * BEAT, 140);
@@ -305,11 +310,11 @@ export const CtaScene: React.FC = () => {
           </div>
         </Reveal>
       </Stack>
-      {/* crédit musique, au-dessus de la zone masquée par l'interface Instagram / TikTok */}
+      {/* crédit musique, en bas de la zone visible (au-dessus de l'interface du réseau) */}
       <div
         style={{
           position: 'absolute',
-          bottom: vertical ? height * 0.17 : 20 * unit,
+          bottom: 4 * unit,
           left: 0,
           right: 0,
           textAlign: 'center',
