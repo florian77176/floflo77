@@ -1,51 +1,152 @@
 import React from 'react';
-import {Img, interpolate, random, staticFile, useCurrentFrame} from 'remotion';
+import {interpolate, random, useCurrentFrame} from 'remotion';
 import {brand} from '../config';
 import {sans, serif} from '../fonts';
 import {useUnit} from './ui';
 
 const {colors} = brand;
 
-type Style = 'mariage' | 'anniversaire' | 'bapteme' | 'entreprise';
+export type TemplateStyle = 'mariage' | 'anniversaire' | 'bapteme' | 'babyshower' | 'entreprise';
+export type TemplateLayout = 'strip' | 'grid' | 'single' | 'duo' | 'logo';
 
-const STYLES: Record<Style, {bg: string; text: string; accent: string; stars?: boolean; ornament: string}> = {
-  mariage: {bg: '#FAF7F0', text: '#2C2A28', accent: '#B8952C', ornament: '♥'},
-  anniversaire: {bg: '#1E2F6B', text: '#FAF7F0', accent: '#E9C46A', stars: true, ornament: '★'},
-  bapteme: {bg: '#DCE8E4', text: '#2F4A45', accent: '#8FB3A8', ornament: '✿'},
-  entreprise: {bg: '#111111', text: '#FAF7F0', accent: colors.gold, ornament: '◆'},
+const STYLES: Record<TemplateStyle, {bg: string; text: string; accent: string; slot: string; stars?: boolean; ornament: string}> = {
+  mariage: {bg: '#FAF7F0', text: '#2C2A28', accent: '#B8952C', slot: '#EFE6D2', ornament: '♥'},
+  anniversaire: {bg: '#1E2F6B', text: '#FAF7F0', accent: '#E9C46A', slot: '#2A3E82', stars: true, ornament: '★'},
+  bapteme: {bg: '#E3EEEA', text: '#2F4A45', accent: '#7FA89B', slot: '#CFE0DA', ornament: '✿'},
+  babyshower: {bg: '#FBE7EC', text: '#6B3A4A', accent: '#D98AA0', slot: '#F5D3DC', ornament: '♡'},
+  entreprise: {bg: '#111111', text: '#FAF7F0', accent: colors.gold, slot: '#1F1F1F', ornament: '◆'},
 };
 
-// Cadre photobooth personnalisé (format tirage 3:2) : photo en haut, texte en bas.
-// Le texte s'écrit lettre par lettre à partir de `typeFrom`.
+// Proportions de chaque format de tirage (largeur / hauteur)
+export const LAYOUT_RATIO: Record<TemplateLayout, number> = {
+  strip: 1 / 3,
+  grid: 2 / 3,
+  single: 2 / 3,
+  duo: 3 / 2,
+  logo: 3 / 2,
+};
+
+const SLOTS: Record<TemplateLayout, number> = {strip: 3, grid: 4, single: 1, duo: 2, logo: 1};
+
+// Silhouettes génériques (pas de vraies personnes) : aident à imaginer la photo
+const Guests: React.FC<{color: string}> = ({color}) => (
+  <svg viewBox="0 0 120 60" style={{position: 'absolute', bottom: 0, left: '10%', width: '80%'}} preserveAspectRatio="xMidYMax meet">
+    {[
+      [30, 22, 11],
+      [60, 18, 13],
+      [90, 22, 11],
+    ].map(([cx, cy, r], i) => (
+      <g key={i} fill={color}>
+        <circle cx={cx} cy={cy} r={r * 0.62} />
+        <path d={`M${cx - r * 1.35} 60 Q${cx - r * 1.35} ${cy + r * 0.85} ${cx} ${cy + r * 0.85} Q${cx + r * 1.35} ${cy + r * 0.85} ${cx + r * 1.35} 60 Z`} />
+      </g>
+    ))}
+  </svg>
+);
+
+const CameraIcon: React.FC<{color: string; size: number}> = ({color, size}) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke={color} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" />
+    <circle cx="12" cy="13" r="3.5" />
+  </svg>
+);
+
+// Emplacement photo : vide (pointillés + appareil photo), puis « photo prise » avec flash
+const Slot: React.FC<{st: (typeof STYLES)[TemplateStyle]; index: number; captureAt: number; unitPx: number}> = ({st, index, captureAt, unitPx}) => {
+  const frame = useCurrentFrame();
+  const local = frame - captureAt;
+  const taken = local >= 0;
+  const flash = interpolate(local, [0, 2, 12], [0, 1, 0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const reveal = interpolate(local, [0, 14], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  return (
+    <div
+      style={{
+        flex: 1,
+        minHeight: 0,
+        minWidth: 0,
+        position: 'relative',
+        borderRadius: 4 * unitPx,
+        overflow: 'hidden',
+        background: st.slot,
+        border: `${2 * unitPx}px dashed ${st.accent}`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'column',
+        gap: 6 * unitPx,
+      }}
+    >
+      <div style={{opacity: 1 - reveal, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 * unitPx}}>
+        <CameraIcon color={st.accent} size={34 * unitPx} />
+        <div style={{fontFamily: sans, fontWeight: 600, fontSize: 13 * unitPx, letterSpacing: 2 * unitPx, textTransform: 'uppercase', color: st.accent}}>
+          Photo {index + 1}
+        </div>
+      </div>
+      {taken && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            opacity: reveal,
+            background: `radial-gradient(circle at 50% 30%, ${st.accent}AA 0%, ${st.accent}44 45%, ${st.slot} 100%)`,
+          }}
+        >
+          <Guests color={`${st.text}55`} />
+        </div>
+      )}
+      <div style={{position: 'absolute', inset: 0, background: '#fff', opacity: flash}} />
+    </div>
+  );
+};
+
+// Cadre photobooth personnalisé. Les photos « se prennent » une à une à partir de `shootFrom`,
+// puis le titre s'écrit lettre par lettre.
 export const Template: React.FC<{
-  style: Style;
+  style: TemplateStyle;
+  layout: TemplateLayout;
   title: string;
   subtitle: string;
-  decor: string;
-  width: number;
-  typeFrom?: number;
-}> = ({style, title, subtitle, decor, width, typeFrom = 0}) => {
+  height: number; // hauteur en unités (1080 = hauteur de référence)
+  shootFrom?: number;
+  shootEvery?: number;
+}> = ({style, layout, title, subtitle, height, shootFrom = 0, shootEvery = 8}) => {
   const frame = useCurrentFrame();
   const {unit} = useUnit();
   const st = STYLES[style];
-  const w = width * unit;
-  const h = (w * 2) / 3;
-  const pad = w * 0.04;
+  const H = height * unit;
+  const W = H * LAYOUT_RATIO[layout];
+  const base = Math.min(W, H); // taille de référence pour les textes
+  const u = base / 400; // unité interne du cadre
+  const pad = base * 0.05;
+  const n = SLOTS[layout];
 
-  const typed = Math.max(0, Math.floor((frame - typeFrom) * 1.2));
-  const titleShown = title.slice(0, typed);
-  const subIn = interpolate(frame - typeFrom, [title.length / 1.2, title.length / 1.2 + 10], [0, 1], {
+  const typeFrom = shootFrom + n * shootEvery + 4;
+  const typed = Math.max(0, Math.floor((frame - typeFrom) * 1.4));
+  const subIn = interpolate(frame - typeFrom, [title.length / 1.4, title.length / 1.4 + 10], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
-  const zoom = interpolate(frame, [0, 90], [1.1, 1.0], {extrapolateRight: 'clamp'});
-  const cursor = typed < title.length && frame >= typeFrom && Math.floor(frame / 6) % 2 === 0;
+  const cursor = typed < title.length && frame >= typeFrom && Math.floor(frame / 5) % 2 === 0;
+
+  const slots = new Array(n).fill(0).map((_, i) => <Slot key={i} st={st} index={i} captureAt={shootFrom + i * shootEvery} unitPx={u} />);
+
+  const grid =
+    layout === 'grid' ? (
+      <div style={{flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr', gap: pad * 0.6, minHeight: 0}}>{slots}</div>
+    ) : layout === 'duo' ? (
+      <div style={{flex: 1, display: 'flex', gap: pad * 0.6, minHeight: 0}}>{slots}</div>
+    ) : (
+      <div style={{flex: 1, display: 'flex', flexDirection: 'column', gap: pad * 0.6, minHeight: 0}}>{slots}</div>
+    );
+
+  const footerH = layout === 'strip' ? H * 0.16 : layout === 'duo' || layout === 'logo' ? H * 0.24 : H * 0.18;
+  const titleSize = layout === 'strip' ? W * 0.13 : base * 0.085;
 
   return (
     <div
       style={{
-        width: w,
-        height: h,
+        width: W,
+        height: H,
         background: st.bg,
         position: 'relative',
         overflow: 'hidden',
@@ -58,65 +159,73 @@ export const Template: React.FC<{
       }}
     >
       {st.stars &&
-        new Array(40).fill(0).map((_, i) => (
+        new Array(36).fill(0).map((_, i) => (
           <div
             key={i}
             style={{
               position: 'absolute',
               left: `${random(`tx${i}`) * 100}%`,
               top: `${random(`ty${i}`) * 100}%`,
-              fontSize: (6 + random(`ts${i}`) * 10) * unit,
+              fontSize: (5 + random(`ts${i}`) * 9) * u,
               color: st.accent,
-              opacity: 0.4 + 0.6 * Math.abs(Math.sin(frame / 8 + i)),
+              opacity: 0.35 + 0.65 * Math.abs(Math.sin(frame / 8 + i)),
             }}
           >
             ★
           </div>
         ))}
-      <div style={{flex: 1, overflow: 'hidden', borderRadius: 3 * unit, position: 'relative', border: `${3 * unit}px solid ${st.accent}`}}>
-        <Img src={staticFile(decor)} style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${zoom})`}} />
-      </div>
+      {grid}
       <div
         style={{
-          height: h * 0.25,
+          height: footerH,
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: 'center',
+          gap: base * 0.04,
           position: 'relative',
-          padding: `0 ${pad * 0.5}px`,
+          flexShrink: 0,
         }}
       >
-        <div style={{color: st.accent, fontSize: h * 0.07}}>{st.ornament}</div>
-        <div style={{textAlign: 'center'}}>
+        {layout === 'logo' && (
           <div
             style={{
-              fontFamily: serif,
-              fontStyle: 'italic',
-              fontWeight: 600,
-              fontSize: h * 0.115,
-              color: st.text,
-              lineHeight: 1.1,
-              minHeight: h * 0.12,
+              position: 'absolute',
+              left: 0,
+              border: `${1.5 * u}px dashed ${st.accent}`,
+              borderRadius: 4 * u,
+              padding: `${6 * u}px ${10 * u}px`,
+              fontFamily: sans,
+              fontWeight: 700,
+              fontSize: base * 0.035,
+              color: st.accent,
+              letterSpacing: 1.5 * u,
             }}
           >
-            {titleShown}
+            VOTRE LOGO
+          </div>
+        )}
+        {layout !== 'strip' && layout !== 'logo' && <div style={{color: st.accent, fontSize: base * 0.06}}>{st.ornament}</div>}
+        <div style={{textAlign: 'center'}}>
+          <div style={{fontFamily: serif, fontStyle: 'italic', fontWeight: 600, fontSize: titleSize, color: st.text, lineHeight: 1.05, minHeight: titleSize * 1.05, whiteSpace: 'nowrap'}}>
+            {title.slice(0, typed)}
             <span style={{opacity: cursor ? 1 : 0, color: st.accent}}>|</span>
           </div>
           <div
             style={{
               fontFamily: sans,
               fontWeight: 600,
-              fontSize: h * 0.045,
-              letterSpacing: h * 0.006,
+              fontSize: titleSize * 0.38,
+              letterSpacing: titleSize * 0.05,
               textTransform: 'uppercase',
               color: st.accent,
               opacity: subIn,
+              whiteSpace: 'nowrap',
             }}
           >
             {subtitle}
           </div>
         </div>
-        <div style={{color: st.accent, fontSize: h * 0.07}}>{st.ornament}</div>
+        {layout !== 'strip' && layout !== 'logo' && <div style={{color: st.accent, fontSize: base * 0.06}}>{st.ornament}</div>}
       </div>
     </div>
   );

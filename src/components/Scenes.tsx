@@ -1,11 +1,18 @@
 import React from 'react';
-import {Img, interpolate, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {Audio, interpolate, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {brand, promo} from '../config';
 import {sans, serif} from '../fonts';
-import {Template} from './Template';
+import {LAYOUT_RATIO, Template, TemplateLayout, TemplateStyle} from './Template';
 import {Flash, goldGradient, Kicker, Logo, Reveal, Title, useUnit} from './ui';
 
 const {colors} = brand;
+
+// Effet sonore déclenché à une image donnée de la scène
+export const Sfx: React.FC<{name: string; at?: number; volume?: number}> = ({name, at = 0, volume = 0.8}) => (
+  <Sequence from={at} layout="none">
+    <Audio src={staticFile(`audio/sfx-${name}.wav`)} volume={volume} />
+  </Sequence>
+);
 
 const Stack: React.FC<{children: React.ReactNode; gap?: number}> = ({children, gap = 40}) => {
   const {unit} = useUnit();
@@ -20,13 +27,14 @@ const Stack: React.FC<{children: React.ReactNode; gap?: number}> = ({children, g
 export const HookScene: React.FC = () => {
   const {vertical} = useUnit();
   return (
-    <Stack gap={10}>
+    <Stack gap={6}>
+      <Sfx name="whoosh" volume={0.5} />
       <Reveal>
         <Title size={vertical ? 92 : 80}>{promo.hook[0]}</Title>
       </Reveal>
       {promo.hook.slice(1).map((line, i) => (
-        <Reveal key={line} delay={8 + i * 6}>
-          <Title size={vertical ? 120 : 100} italic gold>
+        <Reveal key={line} delay={6 + i * 6}>
+          <Title size={vertical ? 110 : 96} italic gold>
             {line}
           </Title>
         </Reveal>
@@ -35,110 +43,93 @@ export const HookScene: React.FC = () => {
   );
 };
 
-// 2. Les fonds IA : compte à rebours 3-2-1, flash, puis le décor apparaît
-export const THEME_DURATION = 60;
-export const ThemesScene: React.FC = () => {
+// 2. Compte à rebours du photobooth : 3, 2, 1… flash !
+export const CountdownScene: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
-  const {unit, vertical} = useUnit();
-  const w = vertical ? 820 : 900;
+  const {unit} = useUnit();
+  const step = 13;
+  const count = 3 - Math.floor(frame / step);
+  const local = frame % step;
+  const smile = spring({frame: frame - 3 * step - 2, fps, config: {damping: 9, stiffness: 160}});
   return (
-    <Stack gap={vertical ? 60 : 30}>
-      <Reveal>
-        <Kicker>✦ {promo.themesTitle} ✦</Kicker>
-      </Reveal>
-      <div style={{position: 'relative', width: w * unit, height: ((w * 2) / 3) * unit + 140 * unit}}>
-        {promo.themes.map((t, i) => {
-          const from = i * THEME_DURATION;
-          const local = frame - from;
-          const count = local < 24 ? 3 - Math.floor(local / 8) : 0;
-          const countScale = 1.6 - (local % 8) / 10;
-          const shown = local >= 24;
-          const zoom = interpolate(local, [24, THEME_DURATION + 20], [1.15, 1.0], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
-          const labelIn = spring({frame: local - 30, fps, config: {damping: 200}});
-          return (
-            <Sequence key={t.label} from={from} durationInFrames={i === promo.themes.length - 1 ? Infinity : THEME_DURATION} layout="none">
-              <div style={{position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 40 * unit}}>
-                <div
-                  style={{
-                    width: w * unit,
-                    height: ((w * 2) / 3) * unit,
-                    borderRadius: 16 * unit,
-                    overflow: 'hidden',
-                    position: 'relative',
-                    border: `${4 * unit}px solid ${colors.gold}`,
-                    boxShadow: `0 ${30 * unit}px ${80 * unit}px rgba(0,0,0,0.6), 0 0 ${60 * unit}px ${colors.gold}44`,
-                    background: '#000',
-                  }}
-                >
-                  {shown && (
-                    <Img src={staticFile(t.decor)} style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${zoom})`}} />
-                  )}
-                  {count > 0 && (
-                    <div
-                      style={{
-                        position: 'absolute',
-                        inset: 0,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontFamily: sans,
-                        fontWeight: 900,
-                        fontSize: 260 * unit,
-                        color: colors.cream,
-                        transform: `scale(${countScale})`,
-                        opacity: 1 - (local % 8) / 10,
-                      }}
-                    >
-                      {count}
-                    </div>
-                  )}
-                  <Flash at={24} />
-                </div>
-                <div
-                  style={{
-                    opacity: labelIn,
-                    transform: `translateY(${(1 - labelIn) * 30}px)`,
-                    fontFamily: serif,
-                    fontStyle: 'italic',
-                    fontWeight: 600,
-                    fontSize: (vertical ? 72 : 58) * unit,
-                    color: colors.cream,
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {t.emoji} {t.label}
-                </div>
-              </div>
-            </Sequence>
-          );
-        })}
-      </div>
-    </Stack>
+    <>
+      {[0, 1, 2].map((i) => (
+        <Sfx key={i} name="beep" at={i * step} volume={0.5} />
+      ))}
+      <Sfx name="shutter" at={3 * step} volume={1} />
+      {count > 0 ? (
+        <div
+          style={{
+            width: 360 * unit,
+            height: 360 * unit,
+            borderRadius: '50%',
+            border: `${6 * unit}px solid ${colors.gold}`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontFamily: sans,
+            fontWeight: 900,
+            fontSize: 220 * unit,
+            color: colors.cream,
+            transform: `scale(${1.25 - local / 40})`,
+            boxShadow: `0 0 ${80 * unit}px ${colors.gold}66, inset 0 0 ${60 * unit}px ${colors.gold}33`,
+          }}
+        >
+          {count}
+        </div>
+      ) : (
+        <div style={{transform: `scale(${smile}) rotate(${(1 - smile) * -10}deg)`}}>
+          <Title size={150} italic gold>
+            {promo.smile}
+          </Title>
+        </div>
+      )}
+      <Flash at={3 * step} />
+    </>
   );
 };
 
-// 3. Cadres personnalisés : un exemple par type d'événement
-export const TEMPLATE_DURATION = 55;
+// 3. Les cadres : un exemple par type d'événement, les photos se prennent une à une
+export const TEMPLATE_DURATION = 62;
 export const TemplatesScene: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const {unit, vertical} = useUnit();
-  const w = vertical ? 820 : 760;
+  const maxW = vertical ? 800 : 760;
+  const maxH = vertical ? 1000 : 640;
   return (
-    <Stack gap={vertical ? 50 : 26}>
+    <Stack gap={vertical ? 40 : 22}>
       <Reveal>
         <Kicker>✦ {promo.templatesTitle} ✦</Kicker>
       </Reveal>
-      <div style={{position: 'relative', width: w * unit, height: ((w * 2) / 3) * unit + 150 * unit}}>
+      <div style={{position: 'relative', width: maxW * unit, height: maxH * unit + 110 * unit}}>
         {promo.templates.map((t, i) => {
           const from = i * TEMPLATE_DURATION;
           const local = frame - from;
           const inS = spring({frame: local, fps, config: {damping: 14, stiffness: 120}});
-          const chipIn = spring({frame: local - 4, fps, config: {damping: 200}});
+          const out = interpolate(local, [TEMPLATE_DURATION - 8, TEMPLATE_DURATION], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+          const last = i === promo.templates.length - 1;
+          const layout = t.layout as TemplateLayout;
+          const height = Math.min(maxH, maxW / LAYOUT_RATIO[layout]);
+          const slots = {strip: 3, grid: 4, single: 1, duo: 2, logo: 1}[layout];
           return (
-            <Sequence key={t.event} from={from} durationInFrames={i === promo.templates.length - 1 ? Infinity : TEMPLATE_DURATION} layout="none">
-              <div style={{position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 36 * unit}}>
+            <Sequence key={t.event} from={from} durationInFrames={last ? Infinity : TEMPLATE_DURATION} layout="none">
+              <Sfx name="whoosh" volume={0.35} />
+              {new Array(slots).fill(0).map((_, k) => (
+                <Sfx key={k} name="shutter" at={14 + k * 7} volume={0.55} />
+              ))}
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 30 * unit,
+                  opacity: last ? 1 : 1 - out,
+                }}
+              >
                 <div
                   style={{
                     padding: `${12 * unit}px ${36 * unit}px`,
@@ -146,18 +137,27 @@ export const TemplatesScene: React.FC = () => {
                     background: goldGradient,
                     fontFamily: sans,
                     fontWeight: 800,
-                    fontSize: 34 * unit,
+                    fontSize: 32 * unit,
                     color: colors.background,
                     textTransform: 'uppercase',
                     letterSpacing: 3 * unit,
-                    opacity: chipIn,
-                    transform: `translateY(${(1 - chipIn) * -20}px)`,
+                    transform: `scale(${inS})`,
                   }}
                 >
                   {t.event}
                 </div>
-                <div style={{transform: `translateX(${(1 - inS) * 120}%) rotate(${(1 - inS) * 8 + (i % 2 ? 1.5 : -1.5)}deg)`}}>
-                  <Template style={t.style as any} title={t.title} subtitle={t.subtitle} decor={t.decor} width={w} typeFrom={10} />
+                <div style={{flex: 1, display: 'flex', alignItems: 'center'}}>
+                  <div style={{transform: `translateX(${(1 - inS) * 110}%) rotate(${(1 - inS) * 10 + (i % 2 ? 1.5 : -1.5)}deg) translateX(${out * -60}%)`}}>
+                    <Template
+                      style={t.style as TemplateStyle}
+                      layout={layout}
+                      title={t.title}
+                      subtitle={t.subtitle}
+                      height={height}
+                      shootFrom={14}
+                      shootEvery={7}
+                    />
+                  </div>
                 </div>
               </div>
             </Sequence>
@@ -172,31 +172,32 @@ export const TemplatesScene: React.FC = () => {
 export const PrintScene: React.FC = () => {
   const frame = useCurrentFrame();
   const {unit, vertical} = useUnit();
-  const w = vertical ? 700 : 560;
-  const h = (w * 2) / 3;
-  const out = interpolate(frame, [8, 55], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   const t = promo.templates[0];
+  const h = vertical ? 760 : 520;
+  const w = h * LAYOUT_RATIO.strip;
+  const out = interpolate(frame, [8, 50], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
   return (
-    <Stack gap={vertical ? 60 : 30}>
+    <Stack gap={vertical ? 50 : 26}>
+      <Sfx name="printer" at={8} volume={0.6} />
+      <Sfx name="ding" at={52} volume={0.45} />
       <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-        {/* fente de l'imprimante */}
         <div
           style={{
-            width: (w + 80) * unit,
+            width: (w + 160) * unit,
             height: 70 * unit,
             borderRadius: 18 * unit,
-            background: `linear-gradient(180deg, #3a362f, #1d1b17)`,
+            background: 'linear-gradient(180deg, #3a362f, #1d1b17)',
             border: `${2 * unit}px solid ${colors.gold}66`,
             position: 'relative',
             zIndex: 2,
             boxShadow: `0 ${10 * unit}px ${30 * unit}px rgba(0,0,0,0.6)`,
           }}
         >
-          <div style={{position: 'absolute', left: 40 * unit, right: 40 * unit, bottom: 16 * unit, height: 8 * unit, borderRadius: 4, background: '#000'}} />
+          <div style={{position: 'absolute', left: 50 * unit, right: 50 * unit, bottom: 16 * unit, height: 8 * unit, borderRadius: 4, background: '#000'}} />
         </div>
-        <div style={{height: (h + 40) * unit, overflow: 'hidden', marginTop: -24 * unit, paddingLeft: 30 * unit, paddingRight: 30 * unit}}>
+        <div style={{height: (h + 40) * unit, overflow: 'hidden', marginTop: -24 * unit, padding: `0 ${40 * unit}px`}}>
           <div style={{transform: `translateY(${(out - 1) * 100}%)`, paddingTop: 10 * unit}}>
-            <Template style={t.style as any} title={t.title} subtitle={t.subtitle} decor={t.decor} width={w} typeFrom={-100} />
+            <Template style={t.style as TemplateStyle} layout="strip" title={t.title} subtitle={t.subtitle} height={h} shootFrom={-200} />
           </div>
         </div>
       </div>
@@ -206,7 +207,7 @@ export const PrintScene: React.FC = () => {
         </Title>
       </Reveal>
       <Reveal delay={46}>
-        <div style={{fontFamily: sans, fontWeight: 500, fontSize: (vertical ? 38 : 32) * unit, color: colors.muted, textAlign: 'center', maxWidth: (vertical ? 760 : 860) * unit}}>
+        <div style={{fontFamily: sans, fontWeight: 500, fontSize: (vertical ? 36 : 30) * unit, color: colors.muted, textAlign: 'center', maxWidth: (vertical ? 760 : 860) * unit}}>
           {promo.prints.subtitle}
         </div>
       </Reveal>
@@ -214,13 +215,132 @@ export const PrintScene: React.FC = () => {
   );
 };
 
-// 5. Avis clients
+// 5. Tout est inclus
+export const IncludedScene: React.FC = () => {
+  const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const {unit, vertical} = useUnit();
+  const items = promo.included.items;
+  return (
+    <Stack gap={vertical ? 46 : 26}>
+      <Reveal>
+        <Title size={vertical ? 84 : 70} italic gold>
+          {promo.included.title}
+        </Title>
+      </Reveal>
+      <div style={{display: 'flex', flexDirection: 'column', gap: (vertical ? 22 : 14) * unit, width: (vertical ? 800 : 820) * unit}}>
+        {items.map((it, i) => {
+          const at = 12 + i * 9;
+          const s = spring({frame: frame - at, fps, config: {damping: 14}});
+          return (
+            <div
+              key={it.text}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 24 * unit,
+                padding: `${(vertical ? 20 : 14) * unit}px ${28 * unit}px`,
+                borderRadius: 20 * unit,
+                background: 'rgba(212,175,55,0.08)',
+                border: `${2 * unit}px solid ${colors.gold}44`,
+                transform: `translateX(${(1 - s) * (i % 2 ? 1 : -1) * 60}%)`,
+                opacity: s,
+              }}
+            >
+              <Sfx name="pop" at={at} volume={0.35} />
+              <div style={{fontSize: (vertical ? 46 : 38) * unit, width: 60 * unit, textAlign: 'center'}}>{it.icon}</div>
+              <div style={{fontFamily: sans, fontWeight: 600, fontSize: (vertical ? 36 : 32) * unit, color: colors.cream}}>{it.text}</div>
+            </div>
+          );
+        })}
+      </div>
+    </Stack>
+  );
+};
+
+// 6. Les formules et les prix
+export const FormulasScene: React.FC = () => {
+  const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const {unit, vertical} = useUnit();
+  const items = promo.formulas.items;
+  return (
+    <Stack gap={vertical ? 50 : 34}>
+      <Reveal>
+        <Kicker>✦ {promo.formulas.title} ✦</Kicker>
+      </Reveal>
+      <div style={{display: 'flex', flexDirection: vertical ? 'column' : 'row', gap: 26 * unit, alignItems: 'stretch'}}>
+        {items.map((f, i) => {
+          const at = 8 + i * 10;
+          const s = spring({frame: frame - at, fps, config: {damping: 12}});
+          const star = !!f.badge;
+          const glow = star ? 0.5 + 0.5 * Math.sin(frame / 8) : 0;
+          return (
+            <div
+              key={f.name}
+              style={{
+                position: 'relative',
+                width: (vertical ? 760 : 290) * unit,
+                padding: `${(vertical ? 30 : 34) * unit}px ${30 * unit}px`,
+                borderRadius: 26 * unit,
+                background: star ? 'rgba(212,175,55,0.16)' : 'rgba(250,247,240,0.05)',
+                border: `${(star ? 4 : 2) * unit}px solid ${star ? colors.gold : colors.gold + '44'}`,
+                boxShadow: star ? `0 0 ${(40 + glow * 40) * unit}px ${colors.gold}66` : 'none',
+                transform: `scale(${s * (star ? 1.04 : 1)})`,
+                display: 'flex',
+                flexDirection: vertical ? 'row' : 'column',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 12 * unit,
+                textAlign: vertical ? 'left' : 'center',
+              }}
+            >
+              <Sfx name={star ? 'sparkle' : 'pop'} at={at} volume={star ? 0.5 : 0.35} />
+              {star && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: -22 * unit,
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    padding: `${6 * unit}px ${20 * unit}px`,
+                    borderRadius: 999,
+                    background: goldGradient,
+                    fontFamily: sans,
+                    fontWeight: 800,
+                    fontSize: 22 * unit,
+                    color: colors.background,
+                    textTransform: 'uppercase',
+                    letterSpacing: 2 * unit,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  ★ {f.badge}
+                </div>
+              )}
+              <div>
+                <div style={{fontFamily: serif, fontStyle: 'italic', fontWeight: 600, fontSize: 54 * unit, color: colors.cream}}>{f.name}</div>
+                <div style={{fontFamily: sans, fontWeight: 500, fontSize: 26 * unit, color: colors.muted}}>{f.detail}</div>
+              </div>
+              <div style={{fontFamily: sans, fontWeight: 800, fontSize: 64 * unit, color: 'transparent', backgroundImage: goldGradient, WebkitBackgroundClip: 'text', whiteSpace: 'nowrap'}}>
+                {f.price}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </Stack>
+  );
+};
+
+// 7. Avis clients
 export const ReviewScene: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const {unit, vertical} = useUnit();
   return (
     <Stack gap={vertical ? 50 : 34}>
+      <Sfx name="sparkle" at={2} volume={0.5} />
       <div style={{display: 'flex', gap: 14 * unit}}>
         {[0, 1, 2, 3, 4].map((i) => {
           const s = spring({frame: frame - i * 5, fps, config: {damping: 9, stiffness: 160}});
@@ -238,18 +358,7 @@ export const ReviewScene: React.FC = () => {
         </div>
       </Reveal>
       <Reveal delay={30}>
-        <div
-          style={{
-            fontFamily: serif,
-            fontStyle: 'italic',
-            fontWeight: 500,
-            fontSize: (vertical ? 62 : 52) * unit,
-            lineHeight: 1.25,
-            color: colors.cream,
-            textAlign: 'center',
-            maxWidth: (vertical ? 780 : 900) * unit,
-          }}
-        >
+        <div style={{fontFamily: serif, fontStyle: 'italic', fontWeight: 500, fontSize: (vertical ? 62 : 52) * unit, lineHeight: 1.25, color: colors.cream, textAlign: 'center', maxWidth: (vertical ? 780 : 900) * unit}}>
           « {promo.review.quote} »
         </div>
       </Reveal>
@@ -260,53 +369,7 @@ export const ReviewScene: React.FC = () => {
   );
 };
 
-// 6. Pour quels événements + prix
-export const OfferScene: React.FC = () => {
-  const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
-  const {unit, vertical} = useUnit();
-  const priceIn = spring({frame: frame - 30, fps, config: {damping: 11}});
-  return (
-    <Stack gap={vertical ? 60 : 40}>
-      <Reveal>
-        <Kicker>Pour tous vos événements</Kicker>
-      </Reveal>
-      <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 22 * unit, maxWidth: (vertical ? 780 : 920) * unit}}>
-        {promo.events.map((e, i) => {
-          const s = spring({frame: frame - 6 - i * 4, fps, config: {damping: 14}});
-          return (
-            <div
-              key={e}
-              style={{
-                transform: `scale(${s})`,
-                padding: `${18 * unit}px ${36 * unit}px`,
-                borderRadius: 999,
-                border: `${2 * unit}px solid ${colors.gold}`,
-                fontFamily: sans,
-                fontWeight: 600,
-                fontSize: (vertical ? 38 : 32) * unit,
-                color: colors.cream,
-                background: 'rgba(212,175,55,0.08)',
-              }}
-            >
-              {e}
-            </div>
-          );
-        })}
-      </div>
-      <div style={{transform: `scale(${priceIn})`, textAlign: 'center'}}>
-        <Title size={vertical ? 120 : 100} italic gold>
-          {promo.price}
-        </Title>
-      </div>
-      <Reveal delay={40}>
-        <div style={{fontFamily: sans, fontWeight: 500, fontSize: 34 * unit, color: colors.muted, textAlign: 'center'}}>📍 {brand.zone}</div>
-      </Reveal>
-    </Stack>
-  );
-};
-
-// 7. Appel à l'action final
+// 8. Appel à l'action final
 export const CtaScene: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
@@ -315,8 +378,10 @@ export const CtaScene: React.FC = () => {
   const pulse = 1 + Math.sin(frame / 6) * 0.025;
   const shine = interpolate(frame % 60, [0, 40], [-30, 130]);
   return (
-    <Stack gap={vertical ? 56 : 34}>
-      <Logo size={vertical ? 400 : 300} />
+    <Stack gap={vertical ? 46 : 28}>
+      <Sfx name="whoosh" volume={0.4} />
+      <Sfx name="ding" at={20} volume={0.5} />
+      <Logo size={vertical ? 380 : 280} />
       <div
         style={{
           transform: `scale(${btn * pulse})`,
@@ -342,7 +407,10 @@ export const CtaScene: React.FC = () => {
         <div style={{fontFamily: sans, fontWeight: 600, fontSize: 40 * unit, color: colors.gold, textAlign: 'center'}}>📞 {brand.phone}</div>
       </Reveal>
       <Reveal delay={42}>
-        <div style={{fontFamily: sans, fontWeight: 500, fontSize: 32 * unit, color: colors.muted, textAlign: 'center'}}>{promo.ctaSub}</div>
+        <div style={{fontFamily: sans, fontWeight: 500, fontSize: 30 * unit, color: colors.muted, textAlign: 'center'}}>
+          {promo.ctaSub}
+          <br />📍 {brand.zone}
+        </div>
       </Reveal>
     </Stack>
   );

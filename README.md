@@ -6,18 +6,20 @@ Vidéos animées générées automatiquement avec [Remotion](https://www.remotio
 
 | Fichier | Format | Usage |
 |---|---|---|
-| `phoevents-story.mp4` | 1080×1920 · 33 s | Reel / Story Instagram, TikTok |
-| `phoevents-post.mp4` | 1080×1080 · 33 s | Post Instagram / Facebook |
+| `phoevents-story.mp4` | 1080×1920 · 35 s | Reel / Story Instagram, TikTok |
+| `phoevents-post.mp4` | 1080×1080 · 35 s | Post Instagram / Facebook |
 | `phoevents-intro.mp4` | 1920×1080 · 4 s | Intro logo YouTube, écran d'événement |
 
-Vidéo promo du photobooth, sans aucune personne à l'écran : accroche → décors IA vides (compte à rebours 3-2-1 + flash) →
-cadres personnalisés par type d'événement (mariage, anniversaire, baptême, entreprise) → tirage qui sort de l'imprimante →
-avis Google 5/5 → événements & prix → appel à l'action (phoevents.fr, téléphone).
+Déroulé : accroche → compte à rebours « 3, 2, 1, Souriez ! » → 5 exemples de cadres avec emplacements photo
+(mariage, anniversaire, baptême, baby shower, entreprise) → tirage qui sort de l'imprimante → tout ce qui est inclus →
+formules et prix → avis Google 5/5 → appel à l'action (phoevents.fr, téléphone).
+
+Musique et bruitages originaux (libres de droits), générés par `tools/make_audio.py`.
 
 ## Modifier les textes / couleurs
 
 Tout est dans `src/config.ts` (phrases, prix, avis, contact, couleurs, photos).
-Les décors sont dans `public/decors/`, le logo dans `public/logo.png`.
+Le logo est dans `public/logo.png`, la musique et les bruitages dans `public/audio/`.
 
 ## Régénérer les vidéos
 
@@ -25,6 +27,13 @@ Les décors sont dans `public/decors/`, le logo dans `public/logo.png`.
 npm install
 npm run render:all     # ou render:story / render:post / render:intro
 npm run studio         # aperçu en direct dans le navigateur
+```
+
+## Recomposer la musique
+
+```bash
+pip install numpy scipy
+python tools/make_audio.py 35.4   # durée en secondes
 ```
 
 ## Effacer les personnes d'une photo
