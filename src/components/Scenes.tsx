@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {createContext, useContext} from 'react';
 import {Audio, interpolate, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {brand, music, musicCredit, reel} from '../config';
 import {sans, serif} from '../fonts';
@@ -10,15 +10,19 @@ const {colors} = brand;
 // Durée d'un temps musical en images (les animations tombent sur le rythme)
 export const BEAT = music.beatSec * 30;
 
-// Les bruitages restent discrets
+// Les bruitages restent discrets, et encore plus quand la voix off parle
 const SFX_GAIN = 0.45;
+export const VoiceContext = createContext(false);
 
 // Effet sonore déclenché à une image donnée de la scène
-export const Sfx: React.FC<{name: string; at?: number; volume?: number}> = ({name, at = 0, volume = 0.8}) => (
-  <Sequence from={Math.round(at)} layout="none">
-    <Audio src={staticFile(`audio/sfx-${name}.wav`)} volume={volume * SFX_GAIN} />
-  </Sequence>
-);
+export const Sfx: React.FC<{name: string; at?: number; volume?: number}> = ({name, at = 0, volume = 0.8}) => {
+  const withVoice = useContext(VoiceContext);
+  return (
+    <Sequence from={Math.round(at)} layout="none">
+      <Audio src={staticFile(`audio/sfx-${name}.wav`)} volume={volume * SFX_GAIN * (withVoice ? 0.4 : 1)} />
+    </Sequence>
+  );
+};
 
 const Stack: React.FC<{children: React.ReactNode; gap?: number}> = ({children, gap = 40}) => {
   const {unit} = useUnit();

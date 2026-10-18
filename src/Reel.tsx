@@ -3,7 +3,7 @@ import {AbsoluteFill, Audio, interpolate, Sequence, Series, staticFile} from 're
 import {music, reel} from './config';
 import voice from '../public/audio/voice/durations.json';
 import {Background} from './components/Background';
-import {BEAT, CtaScene, HookScene, makeTemplateScene, PrintScene, RecapScene} from './components/Scenes';
+import {BEAT, CtaScene, HookScene, makeTemplateScene, PrintScene, RecapScene, VoiceContext} from './components/Scenes';
 import {Logo, SceneFade} from './components/ui';
 
 const FPS = 30;
@@ -24,7 +24,7 @@ const STEPS: Step[] = [
     beats: 6,
     Comp: makeTemplateScene(i),
     voice: `tpl-${t.style}` as VoiceKey,
-    voiceAt: 4,
+    voiceAt: 10, // après le « whoosh » d'entrée du cadre
   })),
   {id: 'recap', beats: 6, Comp: RecapScene, voice: 'recap', voiceAt: 4},
   {id: 'prints', beats: 4, Comp: PrintScene, voice: 'prints', voiceAt: 4},
@@ -58,6 +58,7 @@ export const Reel: React.FC<ReelProps> = ({withMusic, withVoice}) => {
     return (duck ? 0.18 : 0.35) * fadeOut;
   };
   return (
+    <VoiceContext.Provider value={withVoice}>
     <AbsoluteFill>
       <Background />
       {withMusic && <Audio src={staticFile(music.file)} trimBefore={Math.round(music.startSec * FPS)} volume={musicVolume} />}
@@ -77,6 +78,7 @@ export const Reel: React.FC<ReelProps> = ({withMusic, withVoice}) => {
         ))}
       </Series>
     </AbsoluteFill>
+    </VoiceContext.Provider>
   );
 };
 
