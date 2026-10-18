@@ -21,7 +21,14 @@ export const brand = {
 };
 
 export const promo = {
-  hook: ['Le souvenir que', 'vos invités vont', 's’arracher'],
+  // Accroche synchronisée avec la voix (images où chaque mot apparaît, 30 images = 1 s)
+  hook: {
+    lead: 'Vous préparez',
+    cycle: ['un mariage ?', 'un anniversaire ?', 'une soirée ?'],
+    cycleAt: [22, 47, 72],
+    look: 'Regardez ça 👇',
+    lookAt: 96,
+  },
   smile: 'Souriez !',
   templatesTitle: 'Votre cadre, votre style',
   // Exemples de cadres personnalisés (les emplacements photo restent vides pour que chacun s'imagine)

@@ -8,7 +8,7 @@
     "render:story": "remotion render Story videos/phoevents-story.mp4",
     "render:post": "remotion render Post videos/phoevents-post.mp4",
     "render:intro": "remotion render Intro videos/phoevents-intro.mp4",
-    "render:all": "npm run render:story && npm run render:post && npm run render:intro"
+    "render:all": "npm run render:story && npm run render:post && npm run render:intro && sh tools/master_audio.sh videos/*.mp4"
   },
   "dependencies": {
     "@remotion/cli": "4.0.536",

@@ -6,18 +6,19 @@ Vidéos animées générées automatiquement avec [Remotion](https://www.remotio
 
 | Fichier | Format | Usage |
 |---|---|---|
-| `phoevents-story.mp4` | 1080×1920 · 41 s | Reel / Story Instagram, TikTok |
-| `phoevents-post.mp4` | 1080×1080 · 41 s | Post Instagram / Facebook |
+| `phoevents-story.mp4` | 1080×1920 · 68 s | Reel / Story Instagram, TikTok |
+| `phoevents-post.mp4` | 1080×1080 · 68 s | Post Instagram / Facebook |
 | `phoevents-intro.mp4` | 1920×1080 · 4 s | Intro logo YouTube, écran d'événement |
 
-Déroulé : accroche → compte à rebours « 3, 2, 1, Souriez ! » → 5 exemples de cadres avec emplacements photo
-(mariage, anniversaire, baptême, baby shower, entreprise) → tirage qui sort de l'imprimante → tout ce qui est inclus →
-formules et prix → avis Google 5/5 → appel à l'action (phoevents.fr, téléphone).
+Déroulé : accroche « Vous préparez un mariage, un anniversaire ou une soirée ? » → compte à rebours « Souriez ! » →
+5 cadres d'exemple avec emplacements photo, ~6 s chacun avec une phrase dédiée (mariage, anniversaire, baptême,
+baby shower, entreprise) → tirage qui sort de l'imprimante → tout ce qui est inclus → formules et prix →
+avis Google 5/5 → appel à l'action (phoevents.fr, téléphone, devis gratuit).
 
 Voix off française (Chatterbox, licence MIT) générée par `tools/make_voice.py`, chaque phrase est vérifiée
 par transcription automatique. Musique : « Funky Chunk » de Kevin MacLeod (incompetech.com), licence CC BY 4.0 :
 **mettre en description de la publication** « Musique : Funky Chunk – Kevin MacLeod (incompetech.com) – CC BY 4.0 ».
-La musique baisse automatiquement quand la voix parle. Bruitages originaux générés par `tools/make_audio.py`.
+La musique (volontairement basse) baisse encore quand la voix parle ; le son final est mis à -14 LUFS (`tools/master_audio.sh`). Bruitages originaux générés par `tools/make_audio.py`.
 
 ## Modifier les textes / couleurs
 

@@ -1,10 +1,14 @@
 {
-  "hook": 2.52,
-  "smile": 1.72,
-  "templates": 8.48,
-  "prints": 4.44,
-  "included": 4.24,
-  "formulas": 3.84,
-  "review": 4.16,
-  "cta": 4.04
+  "hook": 4.72,
+  "smile": 1.68,
+  "tpl-mariage": 4.72,
+  "tpl-anniversaire": 3.64,
+  "tpl-bapteme": 3.8,
+  "tpl-babyshower": 4.96,
+  "tpl-entreprise": 4.32,
+  "prints": 4.96,
+  "included": 4.92,
+  "formulas": 4.0,
+  "review": 3.12,
+  "cta": 6.96
 }

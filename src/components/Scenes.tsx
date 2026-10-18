@@ -7,10 +7,13 @@ import {Flash, goldGradient, Kicker, Logo, Reveal, Title, useUnit} from './ui';
 
 const {colors} = brand;
 
+// Les bruitages restent discrets pour laisser la place à la voix
+const SFX_GAIN = 0.45;
+
 // Effet sonore déclenché à une image donnée de la scène
 export const Sfx: React.FC<{name: string; at?: number; volume?: number}> = ({name, at = 0, volume = 0.8}) => (
   <Sequence from={at} layout="none">
-    <Audio src={staticFile(`audio/sfx-${name}.wav`)} volume={volume} />
+    <Audio src={staticFile(`audio/sfx-${name}.wav`)} volume={volume * SFX_GAIN} />
   </Sequence>
 );
 
@@ -23,22 +26,48 @@ const Stack: React.FC<{children: React.ReactNode; gap?: number}> = ({children, g
   );
 };
 
-// 1. Accroche
+// 1. Accroche : « Vous préparez… un mariage ? un anniversaire ? une soirée ? » puis « Regardez ça ! »
 export const HookScene: React.FC = () => {
-  const {vertical} = useUnit();
+  const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const {unit, vertical} = useUnit();
+  const words = promo.hook.cycle;
+  const idx = promo.hook.cycleAt.filter((f) => frame >= f).length - 1;
+  const lookAt = promo.hook.lookAt;
+  const look = spring({frame: frame - lookAt, fps, config: {damping: 10, stiffness: 150}});
   return (
-    <Stack gap={6}>
+    <Stack gap={10}>
       <Sfx name="whoosh" volume={0.5} />
+      <Sfx name="pop" at={lookAt} volume={0.6} />
       <Reveal>
-        <Title size={vertical ? 92 : 80}>{promo.hook[0]}</Title>
+        <Title size={vertical ? 96 : 84}>{promo.hook.lead}</Title>
       </Reveal>
-      {promo.hook.slice(1).map((line, i) => (
-        <Reveal key={line} delay={6 + i * 6}>
-          <Title size={vertical ? 110 : 96} italic gold>
-            {line}
-          </Title>
-        </Reveal>
-      ))}
+      <div style={{height: (vertical ? 140 : 120) * unit, display: 'flex', alignItems: 'center'}}>
+        {idx >= 0 && (
+          <div key={idx} style={{transform: `translateY(${(1 - spring({frame: frame - promo.hook.cycleAt[idx], fps, config: {damping: 14, stiffness: 180}})) * 60}px)`}}>
+            <Title size={vertical ? 118 : 100} italic gold>
+              {words[idx]}
+            </Title>
+          </div>
+        )}
+      </div>
+      <div style={{transform: `scale(${look})`, marginTop: 20 * unit}}>
+        <div
+          style={{
+            padding: `${18 * unit}px ${50 * unit}px`,
+            borderRadius: 999,
+            border: `${3 * unit}px solid ${colors.gold}`,
+            fontFamily: sans,
+            fontWeight: 800,
+            fontSize: (vertical ? 48 : 42) * unit,
+            color: colors.cream,
+            textTransform: 'uppercase',
+            letterSpacing: 3 * unit,
+          }}
+        >
+          {promo.hook.look}
+        </div>
+      </div>
     </Stack>
   );
 };
@@ -90,79 +119,58 @@ export const CountdownScene: React.FC = () => {
   );
 };
 
-// 3. Les cadres : un exemple par type d'événement, les photos se prennent une à une
-export const TEMPLATE_DURATION = 62;
-export const TemplatesScene: React.FC = () => {
+// 3. Un cadre par scène : il entre, les photos se prennent une à une, le titre s'écrit, puis on laisse le temps de regarder
+export const makeTemplateScene = (index: number): React.FC => () => {
   const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
+  const {fps, durationInFrames} = useVideoConfig();
   const {unit, vertical} = useUnit();
+  const t = promo.templates[index];
+  const layout = t.layout as TemplateLayout;
   const maxW = vertical ? 800 : 760;
   const maxH = vertical ? 1000 : 640;
+  const height = Math.min(maxH, maxW / LAYOUT_RATIO[layout]);
+  const slots = {strip: 3, grid: 4, single: 1, duo: 2, logo: 1}[layout];
+  const shootFrom = 22;
+  const shootEvery = 12;
+  const inS = spring({frame, fps, config: {damping: 15, stiffness: 100}});
+  const drift = interpolate(frame, [0, durationInFrames], [1, 1.05]);
   return (
-    <Stack gap={vertical ? 40 : 22}>
+    <Stack gap={vertical ? 36 : 20}>
+      <Sfx name="whoosh" volume={0.4} />
+      {new Array(slots).fill(0).map((_, k) => (
+        <Sfx key={k} name="shutter" at={shootFrom + k * shootEvery} volume={0.6} />
+      ))}
       <Reveal>
         <Kicker>✦ {promo.templatesTitle} ✦</Kicker>
       </Reveal>
-      <div style={{position: 'relative', width: maxW * unit, height: maxH * unit + 110 * unit}}>
-        {promo.templates.map((t, i) => {
-          const from = i * TEMPLATE_DURATION;
-          const local = frame - from;
-          const inS = spring({frame: local, fps, config: {damping: 14, stiffness: 120}});
-          const out = interpolate(local, [TEMPLATE_DURATION - 8, TEMPLATE_DURATION], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
-          const last = i === promo.templates.length - 1;
-          const layout = t.layout as TemplateLayout;
-          const height = Math.min(maxH, maxW / LAYOUT_RATIO[layout]);
-          const slots = {strip: 3, grid: 4, single: 1, duo: 2, logo: 1}[layout];
-          return (
-            <Sequence key={t.event} from={from} durationInFrames={last ? Infinity : TEMPLATE_DURATION} layout="none">
-              <Sfx name="whoosh" volume={0.35} />
-              {new Array(slots).fill(0).map((_, k) => (
-                <Sfx key={k} name="shutter" at={14 + k * 7} volume={0.55} />
-              ))}
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: 30 * unit,
-                  opacity: last ? 1 : 1 - out,
-                }}
-              >
-                <div
-                  style={{
-                    padding: `${12 * unit}px ${36 * unit}px`,
-                    borderRadius: 999,
-                    background: goldGradient,
-                    fontFamily: sans,
-                    fontWeight: 800,
-                    fontSize: 32 * unit,
-                    color: colors.background,
-                    textTransform: 'uppercase',
-                    letterSpacing: 3 * unit,
-                    transform: `scale(${inS})`,
-                  }}
-                >
-                  {t.event}
-                </div>
-                <div style={{flex: 1, display: 'flex', alignItems: 'center'}}>
-                  <div style={{transform: `translateX(${(1 - inS) * 110}%) rotate(${(1 - inS) * 10 + (i % 2 ? 1.5 : -1.5)}deg) translateX(${out * -60}%)`}}>
-                    <Template
-                      style={t.style as TemplateStyle}
-                      layout={layout}
-                      title={t.title}
-                      subtitle={t.subtitle}
-                      height={height}
-                      shootFrom={14}
-                      shootEvery={7}
-                    />
-                  </div>
-                </div>
-              </div>
-            </Sequence>
-          );
-        })}
+      <div
+        style={{
+          padding: `${12 * unit}px ${36 * unit}px`,
+          borderRadius: 999,
+          background: goldGradient,
+          fontFamily: sans,
+          fontWeight: 800,
+          fontSize: 34 * unit,
+          color: colors.background,
+          textTransform: 'uppercase',
+          letterSpacing: 3 * unit,
+          transform: `scale(${inS})`,
+        }}
+      >
+        {t.event}
+      </div>
+      <div style={{height: maxH * unit, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+        <div style={{transform: `translateY(${(1 - inS) * 40}%) rotate(${(1 - inS) * 8 + (index % 2 ? 1.5 : -1.5)}deg) scale(${(0.85 + inS * 0.15) * drift})`, opacity: Math.min(1, inS * 1.5)}}>
+          <Template
+            style={t.style as TemplateStyle}
+            layout={layout}
+            title={t.title}
+            subtitle={t.subtitle}
+            height={height}
+            shootFrom={shootFrom}
+            shootEvery={shootEvery}
+          />
+        </div>
       </div>
     </Stack>
   );
