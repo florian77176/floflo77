@@ -18,7 +18,7 @@ from faster_whisper import WhisperModel
 
 OUT = os.path.join(os.path.dirname(__file__), '..', 'public', 'audio', 'voice')
 
-# Texte de la voix off (« Pho Events » est prononcé « Fo-Évent »)
+# Texte de la voix off (« Pho Events » se prononce « Pho Évente » : écrit « Fo Évente » pour la voix)
 LINES = {
     'hook': 'Vous préparez un mariage, un anniversaire ou une soirée ? Regardez ça !',
     'smile': 'Et maintenant… souriez !',
@@ -31,13 +31,13 @@ LINES = {
     'included': "Photos illimitées, livraison, installation : on s'occupe de tout !",
     'formulas': 'Le tout, à partir de cent quatre-vingts euros seulement.',
     'review': 'Et nos clients nous donnent cinq étoiles sur Google !',
-    'cta': 'Pho Events : réservez votre date sur pho events point F R. Devis gratuit, réponse en vingt-quatre heures !',
+    'cta': 'Fo Évente : réservez votre date sur fo évente point F R. Devis gratuit, réponse en vingt-quatre heures !',
 }
 
 # Ce que la transcription doit retrouver (sert à vérifier chaque prise)
 EXPECT = {
     'formulas': 'le tout à partir de 180 euros seulement',
-    'cta': 'faux évent réservez votre date sur faux évent fr devis gratuit réponse en 24 heures',
+    'cta': 'faux évente réservez votre date sur faux évente fr devis gratuit réponse en 24 heures',
 }
 TRIES = 5
 # Voix « qui accroche » : plus expressive (exaggeration haute) et plus rythmée (cfg bas)

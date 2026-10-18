@@ -22,7 +22,7 @@ on vérifie, on rend les MP4, on les envoie, on commit et on pousse.
   chacun s'imagine son événement.
 - Les cadres doivent rester **assez longtemps** (≥ 4,5 s chacun) pour être bien vus.
 - **Voix off qui accroche** (question d'accroche), **musique et bruitages bas** sous la voix.
-- « Pho Events » est prononcé « Fo-Évent » par la voix (la prononciation anglaise est mal rendue).
+- « Pho Events » se prononce **« Pho Évente »** (t final prononcé) : l'écrire « Fo Évente » dans le texte de la voix.
 
 ## Où modifier quoi
 | Quoi | Fichier |
