@@ -182,8 +182,11 @@ export const PromoCta: React.FC = () => {
         <Caption size={vertical ? 62 : 50} color={colors.yellow} at={2.5 * FBEAT}>
           📞 {funny.phone}
         </Caption>
-        <Pill size={vertical ? 36 : 30} bg="#fff" color={colors.dark} at={3 * FBEAT}>
-          ✓ Devis gratuit en 24h · Réserve 2 à 3 semaines avant
+        <Pill size={vertical ? 38 : 30} bg="#fff" color={colors.dark} at={3 * FBEAT}>
+          ✓ Devis gratuit en 24h
+        </Pill>
+        <Pill size={vertical ? 38 : 30} bg="#fff" color={colors.dark} at={3 * FBEAT + 4} rotate={2}>
+          📅 Réserve 2 à 3 semaines avant
         </Pill>
         <Caption size={vertical ? 34 : 28} at={3.5 * FBEAT}>
           📍 {funny.zone}
