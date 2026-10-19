@@ -2,8 +2,7 @@ import React from 'react';
 import {Composition} from 'remotion';
 import {Cover} from './Cover';
 import {LogoIntro, Reel, ReelProps, reelDuration} from './Reel';
-import {FunnyCover} from './funny/FunnyCover';
-import {FunnyProps, FunnyReel, funnyDuration} from './funny/FunnyReel';
+import {FunnyPromo, PromoProps, promoDuration} from './funny/promo';
 import './fonts';
 
 const reelComp = (id: string, props: ReelProps, width = 1080, height = 1920) => (
@@ -18,8 +17,8 @@ const reelComp = (id: string, props: ReelProps, width = 1080, height = 1920) => 
   />
 );
 
-const funnyComp = (id: string, props: FunnyProps, width = 1080, height = 1920) => (
-  <Composition id={id} component={FunnyReel} defaultProps={props} durationInFrames={funnyDuration(props.cut)} fps={30} width={width} height={height} />
+const funnyComp = (id: string, props: PromoProps, width = 1080, height = 1920) => (
+  <Composition id={id} component={FunnyPromo} defaultProps={props} durationInFrames={promoDuration(props.cut)} fps={30} width={width} height={height} />
 );
 
 const full = {withMusic: true, withVoice: false, cut: 'full'} as const;
@@ -50,7 +49,8 @@ export const RemotionRoot: React.FC = () => (
     {funnyComp('Funny-TikTok-SansMusique', {withMusic: false, cut: 'full', safe: 'tiktok'})}
     {funnyComp('Funny-Snapchat-Spotlight', {withMusic: true, cut: 'full', safe: 'snapchat'})}
     {funnyComp('Funny-Snapchat-Story', {withMusic: true, cut: 'story', safe: 'snapchat'})}
-    <Composition id="Funny-Cover" component={FunnyCover} durationInFrames={30} fps={30} width={1080} height={1920} />
+    {/* couverture : 1re scène, texte resserré dans la zone 4:5 visible sur la grille du profil */}
+    {funnyComp('Funny-Cover', {withMusic: false, cut: 'full', safe: 'cover'})}
     <Composition id="Intro" component={LogoIntro} durationInFrames={120} fps={30} width={1920} height={1080} />
   </>
 );

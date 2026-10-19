@@ -68,15 +68,16 @@ python tools/remove_people.py photo.jpg photo-vide.jpg --shadow
 
 # Funny Loisirs
 
-Reel « Laquelle tu choisis pour ta fête ? 🎈 » (~27 s, 117 BPM) : les 4 structures (photos du site détourées par IA)
-**se gonflent** à l'écran une par une avec confettis, badge et prix (LEGO géante dès 450 €, Château Safari dès 280 €,
-Puissance 4 basket dès 180 €, Curling gonflable dès 200 €) → chute « Ou… les 4 ? 😏 » + « Commente ton numéro 👇 » →
-occasions → 5/5 (25 avis Google), devis gratuit 24h, appel à l'action. Couleurs et police (Baloo 2) du site.
+Reel « POV : t'as transformé ton jardin 🤯 » (~18 s, 117 BPM) : les **vraies photos** des structures en plein écran,
+coupes sur le rythme avec gros sous-titres (LEGO géante dès 450 €, Château Safari World dès 280 €, toboggan géant,
+parcours d'obstacles, bubble foot, lancer de hache, cible foot géante, Puissance 4 basket dès 180 €) →
+« Et toi ? Tu profites 😎 » (livraison & installation, matériel nettoyé & contrôlé, 5/5 · 25 avis Google) →
+« Réserve ton week-end 🎉 », site, téléphone, devis gratuit 24h.
 
 Fichiers dans `videos/funnyloisirs/` : mêmes formats et mêmes noms que pour Pho Events (instagram/reel, reel-sans-musique,
-story avec place pour un sondage, post-4x5, couverture ; tiktok ; snapchat ; facebook).
+story ~13 s, post-4x5, couverture ; tiktok ; snapchat ; facebook).
 
 Musique : « Who Likes to Party » de Kevin MacLeod (incompetech.com), licence CC BY 4.0 : **mettre en description**
 « Musique : Who Likes to Party – Kevin MacLeod (incompetech.com) – CC BY 4.0 ».
 
-Modifier : `src/funny/config.ts` (structures, prix, textes, musique). Images détourées : `public/funny/structures/`.
+Modifier : `src/funny/promo.tsx` (plans, textes, prix) et `src/funny/config.ts` (contact, musique). Photos : `public/funny/photos/`.

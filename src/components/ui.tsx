@@ -15,6 +15,7 @@ export const SAFE_ZONES: Record<string, Safe> = {
   snapchat: {top: 170, right: 110, bottom: 380, left: 110},
   story: {top: 250, right: 60, bottom: 330, left: 60},
   feed: {top: 40, right: 40, bottom: 40, left: 40},
+  cover: {top: 330, right: 90, bottom: 330, left: 90},
 };
 export const SafeContext = createContext<Safe>(SAFE_ZONES.none);
 

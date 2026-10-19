@@ -16,7 +16,7 @@ R Funny-TikTok                     $D/tiktok/tiktok.mp4
 R Funny-TikTok-SansMusique         $D/tiktok/tiktok-sans-musique.mp4
 R Funny-Snapchat-Spotlight         $D/snapchat/spotlight.mp4
 R Funny-Snapchat-Story             $D/snapchat/story.mp4
-npx remotion still Funny-Cover $D/instagram/couverture.png --frame=0 $BROWSER --log=error
+npx remotion still Funny-Cover $D/instagram/couverture.png --frame=45 $BROWSER --log=error
 
 sh tools/master_audio.sh $D/*/*.mp4
 
