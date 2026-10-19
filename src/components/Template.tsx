@@ -9,12 +9,13 @@ const {colors} = brand;
 export type TemplateStyle = 'mariage' | 'anniversaire' | 'bapteme' | 'babyshower' | 'entreprise';
 export type TemplateLayout = 'strip' | 'grid' | 'single' | 'duo' | 'logo';
 
-const STYLES: Record<TemplateStyle, {bg: string; text: string; accent: string; slot: string; stars?: boolean; ornament: string}> = {
-  mariage: {bg: '#FAF7F0', text: '#2C2A28', accent: '#B8952C', slot: '#EFE6D2', ornament: '♥'},
-  anniversaire: {bg: '#1E2F6B', text: '#FAF7F0', accent: '#E9C46A', slot: '#2A3E82', stars: true, ornament: '★'},
-  bapteme: {bg: '#E3EEEA', text: '#2F4A45', accent: '#7FA89B', slot: '#CFE0DA', ornament: '✿'},
-  babyshower: {bg: '#FBE7EC', text: '#6B3A4A', accent: '#D98AA0', slot: '#F5D3DC', ornament: '♡'},
-  entreprise: {bg: '#111111', text: '#FAF7F0', accent: colors.gold, slot: '#1F1F1F', ornament: '◆'},
+// photo / guests : couleur nette de la photo « prise » et des silhouettes
+const STYLES: Record<TemplateStyle, {bg: string; text: string; accent: string; slot: string; photo: string; guests: string; stars?: boolean; ornament: string}> = {
+  mariage: {bg: '#FAF7F0', text: '#2C2A28', accent: '#B8952C', slot: '#EFE6D2', photo: '#E4CF9C', guests: '#FFFFFF', ornament: '♥'},
+  anniversaire: {bg: '#1E2F6B', text: '#FAF7F0', accent: '#E9C46A', slot: '#2A3E82', photo: '#4467D1', guests: '#E9C46A', stars: true, ornament: '★'},
+  bapteme: {bg: '#E3EEEA', text: '#2F4A45', accent: '#7FA89B', slot: '#CFE0DA', photo: '#A9CBBF', guests: '#FFFFFF', ornament: '✿'},
+  babyshower: {bg: '#FBE7EC', text: '#6B3A4A', accent: '#D98AA0', slot: '#F5D3DC', photo: '#EFA9BC', guests: '#FFFFFF', ornament: '♡'},
+  entreprise: {bg: '#111111', text: '#FAF7F0', accent: colors.gold, slot: '#1F1F1F', photo: '#4A3F22', guests: colors.gold, ornament: '◆'},
 };
 
 // Proportions de chaque format de tirage (largeur / hauteur)
@@ -88,10 +89,11 @@ const Slot: React.FC<{st: (typeof STYLES)[TemplateStyle]; index: number; capture
             position: 'absolute',
             inset: 0,
             opacity: reveal,
-            background: `radial-gradient(circle at 50% 30%, ${st.accent}AA 0%, ${st.accent}44 45%, ${st.slot} 100%)`,
+            // aplat net (pas de dégradé flou, qui ressemble à une photo floue et se compresse mal)
+            background: st.photo,
           }}
         >
-          <Guests color={`${st.text}55`} />
+          <Guests color={st.guests} />
         </div>
       )}
       <div style={{position: 'absolute', inset: 0, background: '#fff', opacity: flash}} />

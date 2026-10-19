@@ -151,7 +151,6 @@ export const makeTemplateScene = (index: number): React.FC => () => {
         <div
           style={{
             transform: `translateX(${(1 - enter) * 110 - exit * 120}%) rotate(${(1 - enter) * 10 + (index % 2 ? 1.5 : -1.5)}deg) scale(${drift})`,
-            filter: `blur(${(1 - enter) * 6 + exit * 8}px)`,
           }}
         >
           <Template

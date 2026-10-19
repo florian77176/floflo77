@@ -54,6 +54,8 @@ avec place pour un sticker sondage. Facebook réutilise les fichiers Instagram.
 - Effacer des personnes d'une photo (si un jour demandé) : `tools/remove_people.py` (rembg + LaMa).
 
 ## Contrôle qualité avant d'envoyer
+- Netteté sur Instagram : pas de dégradés « flous » dans les emplacements photo (aplats nets), pas de filtre `blur`
+  dans les transitions ; encodage PNG → H.264 CRF 14 preset slow, yuv420p BT.709 (voir `remotion.config.ts`).
 0. La **toute première image** doit déjà montrer l'accroche (pas de fondu depuis le noir) : c'est l'aperçu dans le fil.
    Le texte d'appel aux commentaires doit rester ≥ 3 s à l'écran. Couverture : composition `Cover`.
 1. Stills de chaque scène en 9:16 et 1:1 : rien de coupé, pas de retour à la ligne disgracieux.
