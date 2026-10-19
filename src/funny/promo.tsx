@@ -1,34 +1,67 @@
 import React from 'react';
-import {AbsoluteFill, Audio, Img, interpolate, Series, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Audio, Img, interpolate, Series, staticFile, useCurrentFrame} from 'remotion';
 import {rounded} from '../fonts';
 import {Sfx} from '../components/Scenes';
 import {Flash, SAFE_ZONES, SafeContext, SceneFade, useUnit} from '../components/ui';
 import {funny, funnyMusic, funnyMusicCredit} from './config';
+import {Annotation, Clip3D} from './clip3d';
 import {FBEAT, FunnyBackground, Pill, usePopAt} from './parts';
 
 const {colors} = funny;
 
-// ─── Plans « photo réelle plein écran » ───────────────────────────────────
-// Les vraies photos du site, en plein écran : on voit la taille des structures et on s'imagine chez soi.
+// ─── Plans « photo 3D » ───────────────────────────────────────────────────
+// Les vraies photos du site, animées en 3D (tools/parallax.py → public/funny/clips/), avec des annotations
+// dessinées (hauteurs réelles du site, flèches). Les profondeurs d viennent de tools/anchor_depth.py.
 export type ShotDef = {
   id: string;
-  photo: string; // dans public/funny/photos/
-  focus?: string; // cadrage (object-position)
+  clip: string; // public/funny/clips/<clip>.mp4
+  orbit: number; // même valeur que celle passée à tools/parallax.py
   caption: string;
-  kicker?: string; // petit texte au-dessus (ex. « POV : »)
+  kicker?: string; // petit texte au-dessus
+  sub?: string; // petit texte en dessous
   price?: string;
+  annotations?: Annotation[];
   beats: number;
 };
 
 export const SHOTS: ShotDef[] = [
-  {id: 'lego', photo: 'lego', focus: '50% 60%', kicker: 'POV :', caption: 't’as transformé ton jardin 🤯', price: 'LEGO géante · dès 450 €', beats: 5},
-  {id: 'safari', photo: 'safari', focus: '45% 50%', caption: 'Château Safari World 🐘', price: 'dès 280 €', beats: 3},
-  {id: 'toboggan', photo: 'toboggan', focus: '50% 50%', caption: 'Toboggan géant 🛝', beats: 2},
-  {id: 'obstacles', photo: 'obstacles', focus: '55% 50%', caption: 'Parcours d’obstacles 💪', beats: 2},
-  {id: 'bubble', photo: 'bubble', focus: '50% 70%', caption: 'Bubble foot ⚽', beats: 2},
-  {id: 'hache', photo: 'hache', focus: '50% 55%', caption: 'Lancer de hache 🪓', beats: 2},
-  {id: 'cible', photo: 'cible-foot', focus: '35% 50%', caption: 'Cible foot géante 🎯', beats: 2},
-  {id: 'p4', photo: 'p4', focus: '50% 55%', caption: 'Puissance 4 basket 🏀', price: 'dès 180 €', beats: 3},
+  {
+    id: 'lego',
+    clip: 'lego',
+    orbit: 0.5,
+    kicker: 'Une structure de',
+    caption: '5,3 MÈTRES',
+    sub: 'de haut 🤯',
+    price: 'LEGO géante · dès 450 €',
+    annotations: [{kind: 'measure', x: 0.8, top: 0.2, bottom: 0.86, dTop: 0.38, dBottom: 0.75, label: '5,3 m', at: 10}],
+    beats: 6,
+  },
+  {
+    id: 'safari',
+    clip: 'safari',
+    orbit: -0.5,
+    caption: 'Château Safari World 🐘',
+    price: 'dès 280 € · ~9 enfants',
+    annotations: [
+      {kind: 'measure', x: 0.19, top: 0.15, bottom: 0.74, dTop: 0.4, dBottom: 0.57, label: '3,9 m', at: 6},
+      {kind: 'arrow', from: [0.6, 0.62], to: [0.84, 0.47], dFrom: 0.43, dTo: 0.27, label: 'toboggan', at: 22},
+    ],
+    beats: 6,
+  },
+  {id: 'toboggan', clip: 'toboggan', orbit: 0.3, caption: 'Ça glisse 🛝', beats: 2},
+  {id: 'obstacles', clip: 'obstacles', orbit: -0.4, caption: 'Parcours d’obstacles 💪', beats: 2},
+  {
+    id: 'p4',
+    clip: 'p4',
+    orbit: 0.4,
+    caption: 'Puissance 4 basket 🏀',
+    price: 'dès 180 €',
+    annotations: [{kind: 'measure', x: 0.86, top: 0.07, bottom: 0.78, dTop: 0.19, dBottom: 0.25, label: '3,7 m', at: 6}],
+    beats: 4,
+  },
+  {id: 'hache', clip: 'hache', orbit: -0.3, caption: 'Lancer de hache 🪓', beats: 3},
+  {id: 'bubble', clip: 'bubble', orbit: 0.5, caption: 'Bubble foot ⚽', price: 'jusqu’à 10 adultes', beats: 3},
+  {id: 'cible', clip: 'cible-foot', orbit: -0.4, caption: 'Cible foot géante 🎯', beats: 3},
 ];
 
 // Texte façon sous-titres TikTok : blanc, gros contour noir
@@ -64,44 +97,32 @@ export const Caption: React.FC<{children: React.ReactNode; size: number; color?:
   );
 };
 
-// Photo plein écran (hors zone de sécurité) : « punch » d'entrée sur le temps puis zoom lent
-const FullPhoto: React.FC<{src: string; focus?: string}> = ({src, focus = '50% 50%'}) => {
-  const frame = useCurrentFrame();
-  const {fps, durationInFrames} = useVideoConfig();
-  const punch = spring({frame, fps, config: {damping: 16, stiffness: 220}});
-  const scale = interpolate(punch, [0, 1], [1.28, 1.06]) + interpolate(frame, [0, durationInFrames], [0, 0.06]);
-  return (
-    <div style={{position: 'fixed', inset: 0, overflow: 'hidden'}}>
-      <Img
-        src={staticFile(`funny/photos/${src}.jpg`)}
-        style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: focus, transform: `scale(${scale})`, filter: 'saturate(1.12) contrast(1.04)'}}
-      />
-      {/* assombrit le haut et le bas pour que le texte reste lisible */}
-      <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 32%, rgba(0,0,0,0) 62%, rgba(0,0,0,0.55) 100%)'}} />
-    </div>
-  );
-};
-
 export const makeShot = (shot: ShotDef, first: boolean): React.FC => () => {
   const {vertical} = useUnit();
   return (
     <>
-      <FullPhoto src={shot.photo} focus={shot.focus} />
+      <Clip3D clip={shot.clip} orbit={shot.orbit} annotations={shot.annotations} />
       {!first && <Sfx name="whoosh" volume={0.5} />}
-      {shot.price && <Sfx name="pop" at={first ? 2 * FBEAT : FBEAT} volume={0.6} />}
+      {shot.price && <Sfx name="pop" at={first ? 3 * FBEAT : FBEAT} volume={0.6} />}
+      {shot.annotations?.map((a, i) => <Sfx key={i} name="pop" at={a.at + 8} volume={0.5} />)}
       <AbsoluteFill style={{justifyContent: 'space-between', alignItems: 'center', padding: '2% 0'}}>
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6}}>
           {shot.kicker && (
-            <Caption size={vertical ? 92 : 76} color={colors.yellow} at={first ? -10 : 0}>
+            <Caption size={vertical ? 70 : 58} at={first ? -10 : 0}>
               {shot.kicker}
             </Caption>
           )}
-          <Caption size={vertical ? (first ? 110 : 96) : first ? 88 : 80} at={first ? -10 : 0} maxWidth={first ? 900 : 900}>
+          <Caption size={vertical ? (first ? 150 : 96) : first ? 116 : 80} color={first ? colors.yellow : '#fff'} at={first ? -10 : 0} maxWidth={900}>
             {shot.caption}
           </Caption>
+          {shot.sub && (
+            <Caption size={vertical ? 70 : 58} at={first ? -10 : 0}>
+              {shot.sub}
+            </Caption>
+          )}
         </div>
         {shot.price ? (
-          <Pill size={vertical ? 60 : 50} bg={colors.red} at={first ? 2 * FBEAT : FBEAT} rotate={-3}>
+          <Pill size={vertical ? 60 : 50} bg={colors.red} at={first ? 3 * FBEAT : FBEAT} rotate={-3}>
             {shot.price}
           </Pill>
         ) : (
@@ -116,12 +137,13 @@ export const makeShot = (shot: ShotDef, first: boolean): React.FC => () => {
 // ─── Plan « on s'occupe de tout » ─────────────────────────────────────────
 export const EaseScene: React.FC = () => {
   const {unit, vertical} = useUnit();
-  const items = ['🚚 On livre & on installe', '🧼 Matériel nettoyé & contrôlé', '⭐ 5/5 · 25 avis Google'];
+  const items = ['🚚 On livre, on installe, on reprend', '🧼 Matériel nettoyé & contrôlé', '⭐ 5/5 · 25 avis Google'];
   return (
     <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: (vertical ? 34 : 22) * unit}}>
       <Sfx name="whoosh" volume={0.5} />
-      <Caption size={vertical ? 100 : 80}>
-        Et toi ?<br />Tu profites 😎
+      <Caption size={vertical ? 96 : 78}>Les enfants : 🤩</Caption>
+      <Caption size={vertical ? 96 : 78} at={FBEAT / 2}>
+        Toi : 😎
       </Caption>
       {items.map((t, i) => (
         <React.Fragment key={t}>
@@ -178,7 +200,7 @@ export const PromoCta: React.FC = () => {
 export type PromoCut = 'full' | 'story';
 export type PromoProps = {withMusic: boolean; cut: PromoCut; safe: keyof typeof SAFE_ZONES};
 
-const STORY_SHOTS = ['lego', 'safari', 'bubble', 'hache', 'p4'];
+const STORY_SHOTS = ['lego', 'safari', 'p4', 'bubble'];
 
 const steps = (cut: PromoCut) => {
   const shots = cut === 'full' ? SHOTS : SHOTS.filter((s) => STORY_SHOTS.includes(s.id));

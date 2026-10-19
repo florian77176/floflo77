@@ -19,15 +19,27 @@ Le client ne veut rien faire soi-même : on fait tout, on vérifie, on rend, on 
 - Couleurs : jaune `#FCDB5D`, rouge `#FE3030`, orange `#FDAF00`, noir `#161616`. Police : Baloo 2 (écrite entre
   guillemets en CSS car le nom contient un chiffre : utiliser `rounded` de `src/fonts.ts`).
 
-## Concept actuel : « POV : t'as transformé ton jardin 🤯 » (vraies photos plein écran)
-Le 1er concept (structures détourées en « stickers » sur fond jaune) n'a pas plu : ça ne donnait pas envie de louer.
-Ce qui marche : **les vraies photos du site en plein écran** (on voit la taille, on s'imagine chez soi), coupes franches
-sur le temps avec « punch » de zoom et flash, gros sous-titres façon TikTok (blanc, contour noir, Baloo 2).
-Déroulé (~18 s) : LEGO « POV : t'as transformé ton jardin 🤯 » + « LEGO géante · dès 450 € » → Château Safari World
-(dès 280 €) → toboggan géant → parcours d'obstacles → bubble foot → lancer de hache → cible foot géante → Puissance 4
-basket (dès 180 €) → « Et toi ? Tu profites 😎 » (on livre & on installe, matériel nettoyé & contrôlé, 5/5 · 25 avis)
-→ logo, « Réserve ton week-end 🎉 », site, téléphone, devis 24h, « réserve 2 à 3 semaines avant ». Story : ~13 s.
+## Concept actuel : photos 3D animées + annotations (version 3)
+Historique : 1) stickers détourés sur fond jaune → « pas fou » ; 2) photos fixes plein écran → « pas fou » (diaporama).
+Version 3 : chaque photo devient un **clip « photo 3D »** (effet zoom 3D façon CapCut : la caméra avance, le premier plan
+grossit plus vite que le fond grâce à une carte de profondeur), avec des **annotations dessinées** qui suivent le
+mouvement : traits de mesure avec les **vraies hauteurs du site** et flèches vers les détails.
+Déroulé (~22 s) : « Une structure de **5,3 MÈTRES** de haut 🤯 » sur la LEGO (+ trait 5,3 m, « LEGO géante · dès 450 € »)
+→ Château Safari World (trait 3,9 m, flèche « toboggan », « dès 280 € · ~9 enfants ») → « Ça glisse 🛝 » → parcours
+d'obstacles → Puissance 4 basket (3,7 m, dès 180 €) → lancer de hache → bubble foot (jusqu'à 10 adultes) → cible foot
+géante → « Les enfants : 🤩 / Toi : 😎 » + on livre/installe/reprend, nettoyé & contrôlé, 5/5 · 25 avis → appel à l'action.
 **Ne pas mettre le photobooth** dans les vidéos Funny Loisirs.
+
+Caractéristiques (site) : LEGO géante 9,5 × 4 m, **5,3 m** de haut, ~10 enfants, dès 6 ans, toboggan + mur d'escalade ;
+Safari World 5,4 × 5 m, **3,9 m**, ~9 enfants, dès 3 ans ; Puissance 4 basket **3,7 m** ; cible hache 3 m ;
+cible foot 2,5 m ; bubble foot 10 adultes max. (Page LEGO : /structure-gonflable-geante/.)
+
+Fabrication des clips 3D :
+1. `python tools/depth.py <dossier> public/funny/photos/*.jpg` (Depth Anything V2 Small, `transformers`)
+2. `python tools/parallax.py photo.jpg photo-depth.png public/funny/clips/<nom>.mp4 focus_x focus_y orbite`
+3. Positions d'annotations : en fraction de l'écran 1080×1920 sur la 1re image ; profondeur de chaque point via
+   `python tools/anchor_depth.py photo depth focus_x focus_y x,y …` → valeurs `d` dans `SHOTS` (`src/funny/promo.tsx`).
+   `orbit` dans `SHOTS` = même valeur qu'à l'étape 2.
 
 ## Règles
 - **Jamais de photos où l'on voit des enfants** (mineurs). Préférer les photos de structures seules.
@@ -41,7 +53,7 @@ basket (dès 180 €) → « Et toi ? Tu profites 😎 » (on livre & on install
 ## Où modifier quoi
 | Quoi | Fichier |
 |---|---|
-| Plans photo (photo, cadrage, texte, prix, durée en temps) | `src/funny/promo.tsx` (`SHOTS`) |
+| Plans (clip 3D, texte, prix, annotations, durée en temps) | `src/funny/promo.tsx` (`SHOTS`) · rendu 3D + annotations : `src/funny/clip3d.tsx` |
 | Scènes « Tu profites » et appel à l'action, montage, version story | `src/funny/promo.tsx` |
 | Contact, couleurs, musique | `src/funny/config.ts` · fond jaune et pastilles : `src/funny/parts.tsx` |
 | Couverture | composition `Funny-Cover` (1re scène, zone `cover`) |
