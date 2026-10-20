@@ -14,6 +14,6 @@ for ep in $EPS; do
   npx remotion render Serie-$ep $D/$ep.mp4 --crf=18 $BROWSER --log=error
   npx remotion render Serie-$ep-sans-musique $D/sans-musique/$ep.mp4 --crf=18 $BROWSER --log=error
   npx remotion still Serie-$ep $D/$ep-couverture.png --frame=20 $BROWSER --log=error
-  sh tools/master_audio.sh $D/$ep.mp4
+  sh tools/master_audio.sh $D/$ep.mp4 $D/sans-musique/$ep.mp4
 done
 echo "Série rendue."
