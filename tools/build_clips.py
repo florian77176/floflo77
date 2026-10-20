@@ -42,3 +42,13 @@ for cid, c in manifest.items():
     )
     d = float(subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', dst], capture_output=True, text=True).stdout)
     print(f'ok {cid}: {d:.2f}s')
+
+# durées réelles des extraits, lues par le montage (src/funny/footage-durations.json)
+dur_path = os.path.join(ROOT, 'src', 'funny', 'footage-durations.json')
+durations = json.load(open(dur_path)) if os.path.exists(dur_path) else {}
+for f in sorted(os.listdir(OUT)):
+    if f.endswith('.mp4') and f[:-4] in manifest:
+        durations[f[:-4]] = round(float(subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0',
+                                                         os.path.join(OUT, f)], capture_output=True, text=True).stdout), 3)
+durations = {k: v for k, v in durations.items() if k in manifest}
+json.dump(dict(sorted(durations.items())), open(dur_path, 'w'), indent=2)

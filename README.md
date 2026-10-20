@@ -68,6 +68,12 @@ python tools/remove_people.py photo.jpg photo-vide.jpg --shadow
 
 # Funny Loisirs
 
+**Série actuelle** (`videos/funnyloisirs/serie/`) : 4 vidéos montées à partir des vraies vidéos du compte TikTok
+(avant/après, top 3 anniversaire, adultes, coulisses), un MP4 9:16 par vidéo pour tous les réseaux, descriptions
+prêtes dans `DESCRIPTIONS.md`. Rendu : `sh tools/render_series.sh` (voir la compétence funnyloisirs-video).
+
+Version précédente (photos 3D) :
+
 Reel « Une structure de 5,3 MÈTRES de haut 🤯 » (~22 s, 117 BPM) : les vraies photos du site **animées en 3D**
 (carte de profondeur Depth Anything V2 → `tools/parallax.py`) avec **annotations dessinées** (hauteurs réelles,
 flèches) : LEGO géante (5,3 m, dès 450 €), Château Safari World (3,9 m, dès 280 €), toboggan, parcours, Puissance 4

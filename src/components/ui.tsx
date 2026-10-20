@@ -16,6 +16,8 @@ export const SAFE_ZONES: Record<string, Safe> = {
   story: {top: 250, right: 60, bottom: 330, left: 60},
   feed: {top: 40, right: 40, bottom: 40, left: 40},
   cover: {top: 330, right: 90, bottom: 330, left: 90},
+  // zone commune Instagram + TikTok + Snapchat + Facebook : un seul fichier pour tous les réseaux
+  universal: {top: 230, right: 140, bottom: 470, left: 90},
 };
 export const SafeContext = createContext<Safe>(SAFE_ZONES.none);
 

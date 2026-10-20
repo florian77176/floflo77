@@ -19,27 +19,24 @@ Le client ne veut rien faire soi-même : on fait tout, on vérifie, on rend, on 
 - Couleurs : jaune `#FCDB5D`, rouge `#FE3030`, orange `#FDAF00`, noir `#161616`. Police : Baloo 2 (écrite entre
   guillemets en CSS car le nom contient un chiffre : utiliser `rounded` de `src/fonts.ts`).
 
-## Concept actuel : photos 3D animées + annotations (version 3)
-Historique : 1) stickers détourés sur fond jaune → « pas fou » ; 2) photos fixes plein écran → « pas fou » (diaporama).
-Version 3 : chaque photo devient un **clip « photo 3D »** (effet zoom 3D façon CapCut : la caméra avance, le premier plan
-grossit plus vite que le fond grâce à une carte de profondeur), avec des **annotations dessinées** qui suivent le
-mouvement : traits de mesure avec les **vraies hauteurs du site** et flèches vers les détails.
-Déroulé (~22 s) : « Une structure de **5,3 MÈTRES** de haut 🤯 » sur la LEGO (+ trait 5,3 m, « LEGO géante · dès 450 € »)
-→ Château Safari World (trait 3,9 m, flèche « toboggan », « dès 280 € · ~9 enfants ») → « Ça glisse 🛝 » → parcours
-d'obstacles → Puissance 4 basket (3,7 m, dès 180 €) → lancer de hache → bubble foot (jusqu'à 10 adultes) → cible foot
-géante → « Les enfants : 🤩 / Toi : 😎 » + on livre/installe/reprend, nettoyé & contrôlé, 5/5 · 25 avis → appel à l'action.
-**Ne pas mettre le photobooth** dans les vidéos Funny Loisirs.
+## Série actuelle : vraies vidéos du compte TikTok (version 4)
+Historique : stickers sur fond jaune → photos fixes → photos 3D : tout jugé « pas fou ». Ce qui manquait : du **vrai
+mouvement filmé**. On utilise maintenant les rushs du compte TikTok public **@funny.loisirs** (72 vidéos,
+`yt-dlp --impersonate chrome`), préparés par `tools/build_clips.py` (manifeste `tools/clips_manifest.json`,
+durées dans `src/funny/footage-durations.json`). Méthode générale : compétence **montage-pro**.
 
-Caractéristiques (site) : LEGO géante 9,5 × 4 m, **5,3 m** de haut, ~10 enfants, dès 6 ans, toboggan + mur d'escalade ;
-Safari World 5,4 × 5 m, **3,9 m**, ~9 enfants, dès 3 ans ; Puissance 4 basket **3,7 m** ; cible hache 3 m ;
-cible foot 2,5 m ; bubble foot 10 adultes max. (Page LEGO : /structure-gonflable-geante/.)
+Série (`src/funny/episodes.ts`, moteur `src/funny/series.tsx`, un MP4 9:16 « universel » par épisode, ≤ 20 s) :
+1. **avant-apres** — terrain vide → rempli, gonflages en accéléré (chrono « 1 minute », chiffre tiré de leur légende TikTok).
+2. **top3-anniversaire** — « Tu choisis laquelle ? 1, 2 ou 3 » : Animal Land, Safari World, LEGO géante (riser avant le n°3).
+3. **adultes** — « Que pour les enfants ? RATÉ 😈 » : cible foot, Puissance 4 basket, sumos → CE / team building.
+4. **coulisses** — charger, livrer, installer, gonfler, sécuriser → « Tu profites 😎 » (leur vidéo la plus vue = vlog).
+Descriptions SEO + calendrier : `videos/funnyloisirs/serie/DESCRIPTIONS.md`. Rendu : `sh tools/render_series.sh <chrome>`.
+Idées de choix des formats : transformation/satisfying (n°1 du secteur), question en commentaire, coulisses du service,
+mots-clés locaux dans le texte à l'écran et la légende (Instagram et TikTok les indexent), 3–5 hashtags.
 
-Fabrication des clips 3D :
-1. `python tools/depth.py <dossier> public/funny/photos/*.jpg` (Depth Anything V2 Small, `transformers`)
-2. `python tools/parallax.py photo.jpg photo-depth.png public/funny/clips/<nom>.mp4 focus_x focus_y orbite`
-3. Positions d'annotations : en fraction de l'écran 1080×1920 sur la 1re image ; profondeur de chaque point via
-   `python tools/anchor_depth.py photo depth focus_x focus_y x,y …` → valeurs `d` dans `SHOTS` (`src/funny/promo.tsx`).
-   `orbit` dans `SHOTS` = même valeur qu'à l'étape 2.
+Pour un nouvel épisode : repérer les passages (planches 1 image/s), ajouter les extraits au manifeste, lancer
+`build_clips.py`, écrire l'épisode dans `episodes.ts` (durées en temps musicaux), vérifier des images fixes, rendre.
+Éviter les passages avec texte incrusté d'origine (« POV… », titres) et les enfants reconnaissables.
 
 ## Règles
 - **Jamais de photos où l'on voit des enfants** (mineurs). Préférer les photos de structures seules.
