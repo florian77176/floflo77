@@ -10,7 +10,7 @@ D=videos/funnyloisirs/serie
 mkdir -p $D
 EPS=${*:-"avant-apres top3-anniversaire adultes coulisses"}
 for ep in $EPS; do
-  npx remotion render Serie-$ep $D/$ep.mp4 $BROWSER --log=error
+  npx remotion render Serie-$ep $D/$ep.mp4 --crf=18 $BROWSER --log=error
   npx remotion still Serie-$ep $D/$ep-couverture.png --frame=20 $BROWSER --log=error
   sh tools/master_audio.sh $D/$ep.mp4
 done
