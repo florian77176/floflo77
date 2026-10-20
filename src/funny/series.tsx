@@ -25,14 +25,16 @@ export type Shot = {
   price?: string; // pastille rouge
   info?: string; // pastille blanche
   counter?: [number, number]; // chrono affiché (secondes) du début à la fin du plan
-  sfx?: Sfx[];
+  fit?: boolean; // l'extrait entier est calé sur la durée du plan (extraits en « velocity edit »)
+  sfx?: Sfx[]; // « impact » déclenche aussi une secousse de caméra
 };
 export type Episode = {
   id: string;
+  // start : position dans le morceau (s) choisie pour que le « drop » tombe sur la révélation ; beat : durée d'un temps
   music: {file: string; start: number; beat: number};
   shots: Shot[];
   end: {clip: ClipId; question: string; line: string; beats: number};
-  credit: string;
+  credit?: string; // crédit musique si la licence l'exige (CC BY) ; Mixkit : non requis
 };
 
 export const episodeDuration = (ep: Episode) => {
@@ -40,17 +42,42 @@ export const episodeDuration = (ep: Episode) => {
   return Math.round(total * ep.music.beat * FPS);
 };
 
-// Extrait plein écran : « punch-in » sur la coupe, vitesse ajustée si l'extrait est trop court
-const Footage: React.FC<{clip: ClipId; frames: number; dim?: number}> = ({clip, frames, dim = 0}) => {
+// Secousse de caméra amortie (impacts)
+const shakeAt = (t: number, shakes: number[]) => {
+  let dx = 0;
+  let dy = 0;
+  for (const s of shakes) {
+    const u = t - s;
+    if (u < 0 || u > 0.35) continue;
+    const a = 22 * Math.exp(-u / 0.09);
+    dx += a * Math.sin(u * 2 * Math.PI * 17);
+    dy += a * 0.7 * Math.cos(u * 2 * Math.PI * 13);
+  }
+  return {dx, dy};
+};
+
+// Extrait plein écran : « punch-in » sur la coupe, pulsation sur chaque temps, secousse sur les impacts,
+// vitesse ajustée si l'extrait est trop court (jamais d'image figée) ou calée sur le plan (fit)
+const Footage: React.FC<{clip: ClipId; frames: number; dim?: number; fit?: boolean; shakes?: number[]; from?: number; beatFrames?: number}> = ({
+  clip,
+  frames,
+  dim = 0,
+  fit = false,
+  shakes = [],
+  from = 0,
+  beatFrames = 15,
+}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const need = frames / FPS;
   const have = durations[clip];
-  const rate = have < need ? have / need : 1; // jamais d'image figée en fin de plan
+  const rate = fit || have < need ? have / need : 1;
   const punch = interpolate(spring({frame, fps, config: {damping: 18, stiffness: 260}}), [0, 1], [1.14, 1]);
+  const bump = 1 + 0.014 * Math.exp(-((from + frame) % beatFrames) / 3);
+  const {dx, dy} = shakeAt(frame / FPS, shakes);
   return (
     <AbsoluteFill style={{overflow: 'hidden', background: '#000'}}>
-      <AbsoluteFill style={{transform: `scale(${punch})`}}>
+      <AbsoluteFill style={{transform: `translate(${dx}px, ${dy}px) scale(${punch * bump * (shakes.length ? 1.04 : 1)})`}}>
         <OffthreadVideo src={staticFile(`funny/footage/${clip}.mp4`)} muted playbackRate={rate} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
       </AbsoluteFill>
       {/* lisibilité des textes en haut et en bas */}
@@ -110,16 +137,17 @@ const Counter: React.FC<{from: number; to: number; frames: number}> = ({from, to
 };
 
 // Textes d'un plan, placés dans la zone visible commune à tous les réseaux
-const ShotOverlay: React.FC<{shot: Shot; prev?: Shot; frames: number}> = ({shot, prev, frames}) => {
+const ShotOverlay: React.FC<{shot: Shot; prev?: Shot; frames: number; first?: boolean}> = ({shot, prev, frames, first = false}) => {
   const {unit} = useUnit();
   const sameItem = !!prev && prev.name !== undefined && prev.name === shot.name; // même structure : pas de nouvelle animation
   return (
     <AbsoluteFill style={{justifyContent: shot.center ? 'center' : 'space-between', alignItems: 'center'}}>
       {shot.center ? (
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 * unit}}>
-          {shot.top && <Caption size={64}>{shot.top}</Caption>}
+          {shot.top && <Caption size={64} at={first ? -30 : 0}>{shot.top}</Caption>}
           {shot.center.map((l, i) => (
-            <Caption key={l} size={i === 0 ? 108 : i === 1 ? 128 : 76} color={i === 1 ? shot.centerColor ?? colors.yellow : '#fff'} at={i * 5} maxWidth={820}>
+            // 1er plan : texte déjà affiché dès la 1re image (c'est l'aperçu dans le fil)
+            <Caption key={l} size={i === 0 ? 108 : i === 1 ? 128 : 76} color={i === 1 ? shot.centerColor ?? colors.yellow : '#fff'} at={first ? -30 : i * 5} maxWidth={820}>
               {l}
             </Caption>
           ))}
@@ -183,9 +211,11 @@ const EndCard: React.FC<{ep: Episode; frames: number}> = ({ep, frames}) => {
           ✓ Devis gratuit en 24h · 📍 77 & Île-de-France
         </Pill>
       </div>
-      <div style={{position: 'absolute', bottom: 0, left: 0, right: 0, textAlign: 'center', fontFamily: rounded, fontSize: 18 * unit, color: 'rgba(255,255,255,0.6)'}}>
-        {ep.credit}
-      </div>
+      {ep.credit && (
+        <div style={{position: 'absolute', bottom: 0, left: 0, right: 0, textAlign: 'center', fontFamily: rounded, fontSize: 18 * unit, color: 'rgba(255,255,255,0.6)'}}>
+          {ep.credit}
+        </div>
+      )}
     </AbsoluteFill>
   );
 };
@@ -196,9 +226,9 @@ const SfxAt: React.FC<{s: Sfx}> = ({s}) => (
   </Sequence>
 );
 
-export type SeriesProps = {episode: Episode; safe: keyof typeof SAFE_ZONES};
+export type SeriesProps = {episode: Episode; safe: keyof typeof SAFE_ZONES; withMusic?: boolean};
 
-export const SeriesVideo: React.FC<SeriesProps> = ({episode: ep, safe}) => {
+export const SeriesVideo: React.FC<SeriesProps> = ({episode: ep, safe, withMusic = true}) => {
   const zone = SAFE_ZONES[safe];
   const total = episodeDuration(ep);
   const bf = ep.music.beat * FPS;
@@ -214,26 +244,35 @@ export const SeriesVideo: React.FC<SeriesProps> = ({episode: ep, safe}) => {
   return (
     <SafeContext.Provider value={zone}>
       <AbsoluteFill style={{background: '#000'}}>
-        <Audio
-          src={staticFile(ep.music.file)}
-          trimBefore={Math.round(ep.music.start * FPS)}
-          volume={(f) => 0.75 * interpolate(f, [total - 24, total], [1, 0], {extrapolateLeft: 'clamp'})}
-        />
+        {withMusic && (
+          <Audio
+            src={staticFile(ep.music.file)}
+            trimBefore={Math.round(ep.music.start * FPS)}
+            volume={(f) => 0.75 * interpolate(f, [total - 18, total], [1, 0], {extrapolateLeft: 'clamp'})}
+          />
+        )}
         <Series>
-          {plan.map(({s, frames}, i) => (
+          {plan.map(({s, from, frames}, i) => (
             <Series.Sequence key={i} durationInFrames={frames}>
-              <Footage clip={s.clip} frames={frames} />
+              <Footage
+                clip={s.clip}
+                frames={frames}
+                fit={s.fit}
+                from={from}
+                beatFrames={bf}
+                shakes={(s.sfx ?? []).filter((x) => x.name === 'impact').map((x) => x.at ?? 0)}
+              />
               {i > 0 && <SfxAt s={{name: 'whoosh', vol: 0.35}} />}
               {(s.sfx ?? []).map((x, k) => (
                 <SfxAt key={k} s={x} />
               ))}
               <div style={zoneStyle}>
-                <ShotOverlay shot={s} prev={plan[i - 1]?.s} frames={frames} />
+                <ShotOverlay shot={s} prev={plan[i - 1]?.s} frames={frames} first={i === 0} />
               </div>
             </Series.Sequence>
           ))}
           <Series.Sequence durationInFrames={total - endFrom}>
-            <Footage clip={ep.end.clip} frames={total - endFrom} dim={0.5} />
+            <Footage clip={ep.end.clip} frames={total - endFrom} dim={0.5} from={endFrom} beatFrames={bf} />
             <SfxAt s={{name: 'boing', vol: 0.5}} />
             <SfxAt s={{name: 'ding', at: 0.4, vol: 0.5}} />
             <div style={zoneStyle}>

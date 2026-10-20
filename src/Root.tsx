@@ -55,7 +55,11 @@ export const RemotionRoot: React.FC = () => (
     {funnyComp('Funny-Cover', {withMusic: false, cut: 'full', safe: 'cover'})}
     {/* ─── Funny Loisirs : série (un fichier 9:16 pour tous les réseaux) ─── */}
     {EPISODES.map((ep) => (
-      <Composition key={ep.id} id={`Serie-${ep.id}`} component={SeriesVideo} defaultProps={{episode: ep, safe: 'universal' as const}} durationInFrames={episodeDuration(ep)} fps={30} width={1080} height={1920} />
+      <Composition key={ep.id} id={`Serie-${ep.id}`} component={SeriesVideo} defaultProps={{episode: ep, safe: 'universal' as const, withMusic: true}} durationInFrames={episodeDuration(ep)} fps={30} width={1080} height={1920} />
+    ))}
+    {/* mêmes vidéos sans musique (bruitages gardés) : pour ajouter un son tendance dans l'appli */}
+    {EPISODES.map((ep) => (
+      <Composition key={`${ep.id}-sm`} id={`Serie-${ep.id}-sans-musique`} component={SeriesVideo} defaultProps={{episode: ep, safe: 'universal' as const, withMusic: false}} durationInFrames={episodeDuration(ep)} fps={30} width={1080} height={1920} />
     ))}
     <Composition id="Intro" component={LogoIntro} durationInFrames={120} fps={30} width={1920} height={1080} />
   </>

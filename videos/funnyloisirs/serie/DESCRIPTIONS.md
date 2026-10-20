@@ -4,6 +4,11 @@ Chaque vidéo est **un seul fichier 9:16** qui marche partout : Reel Instagram, 
 Reel/Story Facebook (textes placés dans la zone visible de tous les réseaux). Une couverture par vidéo
 (`*-couverture.png`, à choisir dans « Modifier la couverture »).
 
+Deux versions de chaque vidéo :
+- `*.mp4` : avec sa musique (Mixkit, libre de droits, **pas besoin de créditer**).
+- `sans-musique/*.mp4` : bruitages seulement → dans TikTok / Instagram, ajoute un **son tendance** de l'appli
+  (c'est ce qui donne le plus de portée). Garde le volume du son de la vidéo à ~30 % pour entendre les bruitages.
+
 ## Calendrier conseillé (1 vidéo tous les 2-3 jours, 18 h – 20 h)
 1. `avant-apres.mp4` (le plus « partageable »)
 2. `top3-anniversaire.mp4` (fait commenter)
@@ -16,7 +21,9 @@ Règles qui font marcher l'algorithme :
 - Les **mots-clés** comptent plus que les hashtags (Instagram et TikTok lisent la légende ET le texte à l'écran) :
   ils sont déjà dans les vidéos (« structures gonflables », « Seine-et-Marne », « anniversaire »…).
 - 3 à 5 hashtags précis maximum.
-- Toujours mettre le crédit musique (licence CC BY 4.0).
+- Instagram : publie d'abord en **« Reel d'essai »** (Trial Reel, montré seulement à des non-abonnés) pour tester ;
+  si ça marche, partage-le à tes abonnés.
+- Épingle les 3 meilleures vidéos en haut de ton profil.
 
 ---
 
@@ -33,8 +40,6 @@ Laquelle chez toi ? 👇
 📍 Savigny-le-Temple, Melun, Lieusaint, Cesson & toute l'Île-de-France
 
 #structuregonflable #chateaugonflable #seineetmarne #avantapres #locationevenementiel
-
-Musique : Who Likes to Party – Kevin MacLeod (incompetech.com) – CC BY 4.0
 ```
 
 ## 2. top3-anniversaire.mp4
@@ -49,8 +54,6 @@ Location de château gonflable pour anniversaire en Seine-et-Marne : on livre, o
 📲 funnyloisirs.fr · 07 83 80 57 14 · Devis gratuit en 24h
 
 #anniversaireenfant #chateaugonflable #structuregonflable #seineetmarne #idéeanniversaire
-
-Musique : Pookatori and Friends – Kevin MacLeod (incompetech.com) – CC BY 4.0
 ```
 
 ## 3. adultes.mp4
@@ -65,8 +68,6 @@ Team building, CE, anniversaire adulte, mariage, EVG/EVJF : location de jeux gon
 📲 funnyloisirs.fr · 07 83 80 57 14 · Devis gratuit en 24h
 
 #teambuilding #animationentreprise #sumo #jeuxgonflables #seineetmarne
-
-Musique : Disco con Tutti – Kevin MacLeod (incompetech.com) – CC BY 4.0
 ```
 
 ## 4. coulisses.mp4
@@ -78,6 +79,4 @@ Ta fête, c'est quand ? 📅 Réserve 2 à 3 semaines avant.
 📲 funnyloisirs.fr · 07 83 80 57 14 · Devis gratuit en 24h
 
 #coulisses #structuregonflable #locationchateaugonflable #seineetmarne #entrepreneur
-
-Musique : Who Likes to Party – Kevin MacLeod (incompetech.com) – CC BY 4.0
 ```

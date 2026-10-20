@@ -44,8 +44,9 @@ Pour un nouvel épisode : repérer les passages (planches 1 image/s), ajouter le
   Photo trop petite → `tools/upscale.py` (Real-ESRGAN x4 via `spandrel`, modèle `RealESRGAN_x4plus.pth` des releases
   GitHub de xinntao/Real-ESRGAN). Attention : la photo « IMG_9092 » montre un tapis air-track bleu, **pas** le curling ;
   la photo Puissance 4 « photo-puissance-4-basket-2 » porte un filigrane leboncoin (ne pas l'utiliser).
-- Musique : « Who Likes to Party », Kevin MacLeod (incompetech.com), **CC BY 4.0** → crédit en fin de vidéo et
-  dans la description des publications.
+- Musiques de la série : Mixkit (crédit non requis) choisies avec `tools/listen.py` : House Fest (avant/après),
+  Fun Times (anniversaire), Funkee Monkeee (adultes), Midnight Funk (coulisses). Anciennes vidéos : Kevin MacLeod
+  (CC BY 4.0, crédit obligatoire). Chaque épisode existe aussi **sans musique** (`serie/sans-musique/`).
 
 ## Où modifier quoi
 | Quoi | Fichier |

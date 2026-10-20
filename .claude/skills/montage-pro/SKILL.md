@@ -22,6 +22,15 @@ Toujours partir de **vraies images** (rushs du client) avant les photos ; les ph
 - **Punch-in** (zoom 1,15→1 en 6 images) à chaque coupe ; **match cut** quand deux plans ont la même forme/le même mouvement.
 - Éviter les fondus enchaînés lents ; préférer coupe franche + flash bref ou whip (sans flou visible prolongé).
 
+## 2 bis. Effets de monteur (implémentés dans `src/funny/series.tsx` et `tools/build_clips.py`)
+- **Velocity edit** (rampe de vitesse) : `"ramp": [[fin, durée_s], …]` dans le manifeste (démarre, file, ralentit sur
+  la révélation) + `fit: true` dans le plan.
+- **Secousse de caméra** automatique sur chaque bruitage `impact` (≈ 0,35 s, amortie).
+- **Pulsation sur le temps** (zoom +1,4 % décroissant à chaque temps) et **punch-in** à chaque coupe.
+- **Drop sur la révélation** + riser avant (voir compétence musique-video).
+- 1re image : texte d'accroche déjà affiché (pas d'animation qui démarre de zéro sur le 1er plan).
+- Vérifier chaque extrait : aucun texte incrusté d'origine (« POV… »), sinon autre passage ou recadrage.
+
 ## 3. Sound design (couches)
 musique (−14 LUFS au final) + whoosh sur coupes + impact/boom sur révélations + riser avant le n°1 + pop sur textes
 + « tic » de compteur. Baisser la musique sous une voix. Bruitages discrets : ils soutiennent, ils ne couvrent pas.
@@ -44,7 +53,10 @@ Top 3 (compte à rebours 3→1, le meilleur à la fin) · Ça se gonfle en X sec
 Avant / Après (même cadrage, coupe sur le temps) · POV · Combien ça coûte ? · Coulisses / livraison ·
 Défi entre adultes · « Pour qui ? » (enfants / ados / entreprises).
 
-## 7. Chaîne technique (ce projet)
+## 7. Compétences liées
+**musique-video** (choix, droits, calage, mixage) · **croissance-reseaux** (stratégie, accroches, légendes, tests).
+
+## 8. Chaîne technique (ce projet)
 - Rushs : `yt-dlp --impersonate chrome` (paquet `curl_cffi`) sur le compte TikTok public du client
   (Instagram/Facebook bloquent sans connexion). Planches contact (10 images/vidéo) pour repérer les passages.
 - Extraits : `tools/extract_clip.sh` (découpe, vitesse, recadrage 9:16, débruitage, 1080×1920, netteté, étalonnage).
