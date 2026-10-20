@@ -239,6 +239,31 @@ def sfx_funny():
     save('sfx-confetti.wav', pop + crackle)
 
 
+def sfx_extra():
+    # impact : coup sourd grave + claquement, pour les révélations (#3, #2, #1)
+    tt = t(1.4)
+    f = 40 + 90 * np.exp(-tt * 9)
+    boom = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt * 3.2)
+    crack = bp(rng.standard_normal(len(tt)), 300, 4000) * np.exp(-tt * 40) * 0.6
+    tail = lp(rng.standard_normal(len(tt)), 900) * np.exp(-tt * 4) * 0.25
+    save('sfx-impact.wav', boom + crack + tail)
+    # riser : montée de tension (souffle qui monte + note qui monte) avant le n°1
+    d = 1.6
+    tt = t(d)
+    n = rng.standard_normal(len(tt))
+    out = np.zeros_like(n)
+    for k in range(16):
+        seg = slice(k * len(tt) // 16, (k + 1) * len(tt) // 16)
+        lo = 400 + 350 * k
+        out[seg] = bp(n, lo, lo * 2.2)[seg]
+    tone = np.sin(2 * np.pi * np.cumsum(220 * 2 ** (2.5 * tt / d)) / SR) * 0.25
+    env = (tt / d) ** 2
+    save('sfx-riser.wav', (out * 0.7 + tone) * env)
+    # tic de compteur
+    tt = t(0.05)
+    save('sfx-tick.wav', np.sin(2 * np.pi * 2400 * tt) * np.exp(-tt * 120) * 0.6)
+
+
 if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     if '--music' in sys.argv:
@@ -247,4 +272,5 @@ if __name__ == '__main__':
         save('music.wav', l, r)
     sfx()
     sfx_funny()
+    sfx_extra()
     print('ok', sorted(os.listdir(OUT)))

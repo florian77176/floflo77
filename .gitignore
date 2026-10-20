@@ -1,3 +1,6 @@
 node_modules
 out
 .DS_Store
+__pycache__/
+# extraits vidéo regénérables : yt-dlp (TikTok) puis tools/build_clips.py
+public/funny/footage/
