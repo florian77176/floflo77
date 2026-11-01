@@ -72,4 +72,47 @@ export const EPISODES: Episode[] = [
     ],
     end: {clip: 'safari-reveal', beats: 6, question: 'Ta fête, c’est quand ? 📅', line: 'Livraison et installation de structures gonflables · 77 & IDF'},
   },
+  {
+    // 5. Série « Tu m'as demandé » n°1 : FAQ météo (faits du site : report/annulation sans frais, contact avant
+    // l'événement, installation possible en intérieur, prise électrique + surface plane)
+    id: 'faq-pluie',
+    music: {...GROOVE, start: 33.09},
+    shots: [
+      {clip: 'lego-drone-wide', beats: 5, top: 'On nous le demande souvent 💬', center: ['Et s’il', 'PLEUT ? 🌧️']},
+      {clip: 'vlog-road', beats: 4, big: 'On suit la météo avec toi 📲'},
+      {clip: 'safari-reveal', beats: 5, big: 'Vent fort ou grosse pluie ?', name: 'Report ou annulation', price: 'SANS FRAIS ✅', sfx: [{name: 'impact', vol: 0.6}]},
+      {clip: 'lego-ramp', beats: 6, fit: true, big: 'Et en hiver ? On installe en intérieur 🏠', sfx: [{name: 'inflate'}]},
+      {clip: 'animal-ramp', beats: 5, fit: true, big: 'Salle, gymnase, préau 👌', sfx: [{name: 'inflate'}]},
+      {clip: 'vlog-stakes', beats: 4, big: 'Il faut juste une prise ⚡ et une surface plane'},
+    ],
+    end: {clip: 'safari-inflate2', beats: 6, question: 'Une autre question ? 👇', line: 'Location de structures gonflables · Seine-et-Marne & IDF'},
+  },
+  {
+    // 6. Saison : fêtes d'entreprise de fin d'année (cible CE / team building, cité sur le site)
+    id: 'fetes-entreprise',
+    music: {...HOUSE, start: 44.82}, // drop (46,76 s) sur le 1er jeu
+    shots: [
+      {clip: 'p4-group', beats: 4, top: 'Entreprises & CE 🎄', center: ['Ta fête de', 'FIN D’ANNÉE', 'cette année ?'], sfx: [{name: 'riser', at: 0.35, vol: 0.55}]},
+      {clip: 'sumo-clash', beats: 4, big: 'Sumos en mousse 🥋', sfx: [{name: 'impact', vol: 0.8}]},
+      {clip: 'cible-hit', beats: 4, big: 'Cible foot géante 🎯', sfx: [{name: 'impact', at: 0.85, vol: 0.6}]},
+      {clip: 'p4-play', beats: 4, big: 'Puissance 4 basket 🏀', price: 'dès 180 €'},
+      {clip: 'lego-ramp', beats: 6, fit: true, big: 'Et pour les enfants 🎈', name: 'LEGO géante 🧱', price: 'dès 450 €', sfx: [{name: 'inflate'}]},
+      {clip: 'animal-ramp', beats: 5, fit: true, big: 'En salle ou dehors 🏠', name: 'Animal Land 🦁', price: 'dès 250 €', sfx: [{name: 'inflate'}]},
+    ],
+    end: {clip: 'hangar-full', beats: 6, question: 'Devis en 24h 📩', line: 'Team building · fêtes d’entreprise · CE · 77 & Île-de-France'},
+  },
+  {
+    // 7. Série « Combien ça coûte ? » : prix « dès » du site, hors livraison (dit clairement)
+    id: 'combien-ca-coute',
+    music: {...FUN, start: 14.21}, // la LEGO tombe sur la mesure la plus forte (23,31 s)
+    shots: [
+      {clip: 'lego-drone-top', beats: 5, top: 'Une structure gonflable…', center: ['Ça coûte', 'COMBIEN ? 💸']},
+      {clip: 'p4-play', beats: 5, name: 'Puissance 4 basket 🏀', price: 'dès 180 €'},
+      {clip: 'animal-ramp', beats: 6, fit: true, name: 'Animal Land 🦁', price: 'dès 250 €', sfx: [{name: 'inflate'}]},
+      {clip: 'safari-ramp', beats: 6, fit: true, name: 'Château Safari World 🐘', price: 'dès 280 €', info: 'dès 3 ans · ~9 enfants', sfx: [{name: 'inflate'}, {name: 'riser', at: 0.88, vol: 0.55}]},
+      {clip: 'lego-ramp', beats: 6, fit: true, name: 'LEGO géante 🧱', price: 'dès 450 €', info: '5,3 m · dès 6 ans', sfx: [{name: 'impact', vol: 0.8}, {name: 'inflate', at: 0.1}]},
+      {clip: 'vlog-ready', beats: 5, big: 'Matériel nettoyé et contrôlé ✅'},
+    ],
+    end: {clip: 'safari-inflate2', beats: 7, question: 'Laquelle pour ta fête ? 👇', line: 'Prix « à partir de », hors livraison · devis gratuit en 24h'},
+  },
 ];

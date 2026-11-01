@@ -80,3 +80,47 @@ Ta fête, c'est quand ? 📅 Réserve 2 à 3 semaines avant.
 
 #coulisses #structuregonflable #locationchateaugonflable #seineetmarne #entrepreneur
 ```
+
+---
+
+# Nouvelles vidéos
+
+## 5. faq-pluie.mp4 — série « Tu m'as demandé » n°1
+```
+« Et s'il pleut ? » 🌧️ La question qu'on nous pose le plus !
+✅ On suit la météo avec toi les jours d'avant
+✅ Vent fort ou fortes intempéries : report ou annulation SANS FRAIS
+✅ En hiver, on installe aussi en intérieur (salle, gymnase, préau)
+Il faut juste une prise électrique et une surface plane 👌
+
+Une autre question ? Pose-la en commentaire, on te répond en vidéo 👇
+📲 funnyloisirs.fr · 07 83 80 57 14 · Devis gratuit en 24h
+
+#structuregonflable #locationchateaugonflable #seineetmarne #anniversaireenfant #faq
+```
+
+## 6. fetes-entreprise.mp4 — saison (novembre-décembre)
+```
+Ta fête de fin d'année d'entreprise, cette année ? 🎄 On oublie le buffet tout seul 😏
+🥋 Sumos en mousse · 🎯 Cible foot géante · 🏀 Puissance 4 basket (dès 180 €)
+🎈 Et pour les enfants : LEGO géante (dès 450 €), Animal Land (dès 250 €)
+En salle ou en extérieur, en Seine-et-Marne et Île-de-France.
+
+Team building, CE, journées festives : devis en 24h 📩 funnyloisirs.fr · 07 83 80 57 14
+
+#teambuilding #animationentreprise #comitedentreprise #fetedefindannee #seineetmarne
+```
+
+## 7. combien-ca-coute.mp4 — série « Combien ça coûte ? »
+```
+Une structure gonflable, ça coûte combien ? 💸 Les vrais prix :
+🏀 Puissance 4 basket : dès 180 €
+🦁 Animal Land : dès 250 €
+🐘 Château Safari World : dès 280 €
+🧱 LEGO géante (5,3 m) : dès 450 €
+Prix « à partir de », hors livraison. Matériel nettoyé et contrôlé avant chaque location ✅
+
+Laquelle pour ta fête ? 👇 Devis gratuit en 24h : funnyloisirs.fr · 07 83 80 57 14
+
+#structuregonflable #chateaugonflable #prix #anniversaireenfant #seineetmarne
+```
