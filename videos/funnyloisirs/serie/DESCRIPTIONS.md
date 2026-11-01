@@ -127,6 +127,8 @@ Laquelle pour ta fête ? 👇 Devis gratuit en 24h : funnyloisirs.fr · 07 83 80
 
 ---
 
+> **À ajouter en fin de chaque description** (licence des emoji animés) : `Emoji animés : Noto Emoji (Google) – CC BY 4.0`
+
 # Nouvelles vidéos (avec éléments animés 3D)
 
 ## 8. pov-parents.mp4 — humour

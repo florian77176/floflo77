@@ -8,6 +8,8 @@ mariage romantique, mariage bohème, 30 ans, 50 ans, baptême, baby shower, soir
 Les photos d'exemple dedans sont des **personnes fictives générées par l'IA de Canva** : ne les présente
 jamais comme de vrais clients.
 
+> **À ajouter en fin de chaque description** (licence des emoji animés) : `Emoji animés : Noto Emoji (Google) – CC BY 4.0`
+
 ## 1. choisis-ton-cadre.mp4
 ```
 Ton cadre photobooth, tu le choisis lequel ? 1, 2, 3 ou 4 ? 👇 Commente ton numéro !
