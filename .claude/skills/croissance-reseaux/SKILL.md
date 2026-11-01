@@ -39,6 +39,16 @@ vérifiés, villes (Savigny-le-Temple, Melun, Lieusaint, Cesson…), appel à l'
 - Épingler les 3 meilleures vidéos ; story quotidienne (coulisses, sondage, lien).
 - Republier le contenu des clients (avec accord), surtout pour la confiance.
 
+## 5 bis. Ce que montrent les recherches 2026 (blogs marketing, à prendre avec prudence)
+- **Séries récurrentes** > vidéos isolées ; numéroter (« épisode 3 ») pour faire revenir.
+- Démonstrations, coulisses et questions clients > courir après chaque son tendance (entreprise de service locale).
+- Récapitulatifs d'événements et installations : bons sur TikTok, Reels et Shorts.
+- Interactif : réponse en vidéo à un commentaire, stitch, sticker « réponse » des Reels.
+- Rendu « natif » / authentique > production trop léchée ; texte à l'écran = couche de narration.
+- **Jamais de filigrane TikTok** en republiant ailleurs (portée en baisse) → exporter nos fichiers propres.
+- Facebook Reels sous-exploité pour le local : publier aussi.
+Idées et calendrier concrets : compétence **ligne-editoriale** ; plans à demander au client : **brief-tournage**.
+
 ## 6. Mesure
 Par vidéo : rétention à 3 s, % de visionnage complet, partages+enregistrements / vues, commentaires, visites profil,
 clics lien, appels/devis. Doubler ce qui marche (même format, autre structure), abandonner le reste après 3 essais.
