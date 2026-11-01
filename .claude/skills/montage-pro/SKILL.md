@@ -30,6 +30,13 @@ Toujours partir de **vraies images** (rushs du client) avant les photos ; les ph
 - **Drop sur la révélation** + riser avant (voir compétence musique-video).
 - 1re image : texte d'accroche déjà affiché (pas d'animation qui démarre de zéro sur le 1er plan).
 - Vérifier chaque extrait : aucun texte incrusté d'origine (« POV… »), sinon autre passage ou recadrage.
+- **Bords d'extrait** : les rushs TikTok sont déjà montés (coupes, flashs orange, titres sur les 0,1–0,3 premières s).
+  Après `build_clips.py`, regarder les 3 premières et 3 dernières images de chaque extrait
+  (`select='lt(n\,3)'` et `-sseof -0.12`), puis la source image par image (fps=30) autour du point d'entrée/sortie,
+  et décaler `in`/`out` au-delà de la coupe (+/- 0,05 s de marge). Une seule image parasite se voit sur téléphone.
+- **Entrées animées** : un élément ne doit jamais partir complètement hors cadre (sinon images vides à la coupe) :
+  glisser depuis ±60 % maximum, pivot 3D ≤ 75° (au-delà de 90° la face cachée rend l'image vide).
+- **Légendes sur image plein écran** (zoom dans une photo) : toujours sur pastille sombre, jamais en texte doré seul.
 
 ## 2 ter. Éléments « vivants » (src/funny/live.tsx)
 - **Emoji 3D animés** : Noto Animated Emoji de Google (Lottie, CC BY 4.0) dans `public/lottie/<nom>.json`
