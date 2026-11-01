@@ -61,3 +61,12 @@ avec place pour un sticker sondage. Facebook réutilise les fichiers Instagram.
 1. Stills de chaque scène en 9:16 et 1:1 : rien de coupé, pas de retour à la ligne disgracieux.
 2. Transcrire la piste son du MP4 final avec Whisper : toute la voix doit être compréhensible.
 3. Je ne peux pas écouter : le dire honnêtement et demander l'avis du client sur la voix et la musique.
+
+## Série « vrais modèles de cadres » (novembre 2026, version actuelle)
+Les cadres dessinés en code (silhouettes) n'ont pas plu : on utilise de **vrais modèles professionnels créés dans le
+compte Canva du client** (outil Canva `create-design` puis `export-design` en PNG 2400 px) → `public/pho/templates/`.
+Le client a choisi d'y mettre des **photos d'exemple** : ce sont des personnes fictives générées par l'IA de Canva ;
+ne jamais les présenter comme de vrais clients. (Brief « champagne » refusé par la modération Canva : l'éviter.)
+Moteur : `src/pho/cards.tsx` (entrées 3D, reflet, plongée caméra dans chaque photo, grille, formule, appel à l'action) ;
+épisodes : `src/pho/episodes.ts` (positions des photos dans `TEMPLATES`, mesurées à la main avec une grille 5 %).
+Rendu : `sh tools/render_pho_series.sh <chrome> [--sans-musique]` → `videos/phoevents/serie/`.

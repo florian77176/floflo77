@@ -124,3 +124,46 @@ Laquelle pour ta fête ? 👇 Devis gratuit en 24h : funnyloisirs.fr · 07 83 80
 
 #structuregonflable #chateaugonflable #prix #anniversaireenfant #seineetmarne
 ```
+
+---
+
+# Nouvelles vidéos (avec éléments animés 3D)
+
+## 8. pov-parents.mp4 — humour
+```
+POV : t'as dit « juste 5 minutes » 😅 … 2 heures plus tard, toujours sur la structure 😂
+Tag le parent comme ça 👇
+
+Structures gonflables et jeux géants en Seine-et-Marne & Île-de-France · funnyloisirs.fr · 07 83 80 57 14
+#pov #humour #structuregonflable #parents #seineetmarne
+```
+
+## 9. animal-land-19s.mp4 — série « chrono »
+```
+19 SECONDES ⏱️ C'est le temps qu'il faut à Animal Land pour prendre vie 🦁🤯
+Animal Land · dès 250 € · livraison et installation en Seine-et-Marne & Île-de-France
+
+Tu la veux à ta fête ? 👇 funnyloisirs.fr · 07 83 80 57 14 · Devis gratuit en 24h
+#structuregonflable #satisfying #chateaugonflable #anniversaireenfant #seineetmarne
+```
+
+## 10. faq-place.mp4 — série « Tu m'as demandé » n°2
+```
+« Il faut combien de place ? » 📏
+🧱 LEGO géante : 9,5 × 4 m (5,3 m de haut)
+🐘 Château Safari World : 5,4 × 5 m (3,9 m de haut)
+🏀 Puissance 4 basket : 3,1 × 3,7 m (3,7 m de haut)
+Une surface plane + une prise électrique, et c'est bon 👌
+
+Envoie-nous une photo de ton espace, on te conseille la bonne structure 📸 funnyloisirs.fr · 07 83 80 57 14
+#structuregonflable #chateaugonflable #faq #anniversaireenfant #seineetmarne
+```
+
+## 11. lego-geante.mp4
+```
+5,3 MÈTRES de haut 🤯 La structure LEGO géante : on grimpe, on glisse, on recommence 🛝
+Dès 450 € · dès 6 ans · livraison et installation en Seine-et-Marne & Île-de-France
+
+Dispo pour ta fête 👇 funnyloisirs.fr · 07 83 80 57 14 · Devis gratuit en 24h
+#structuregonflable #lego #anniversaireenfant #jeuxgonflables #seineetmarne
+```

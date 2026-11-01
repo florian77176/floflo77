@@ -5,6 +5,8 @@ import {SAFE_ZONES, SafeContext, useUnit} from '../components/ui';
 import {funny} from './config';
 import durations from './footage-durations.json';
 import {Caption} from './promo';
+import {Confetti3D, Flip3D, Floater, FloatingEmoji, LightSweep, Title3D} from './live';
+import {rounded as roundedFont} from '../fonts';
 import {Pill} from './parts';
 
 const {colors} = funny;
@@ -27,6 +29,9 @@ export type Shot = {
   counter?: [number, number]; // chrono affiché (secondes) du début à la fin du plan
   fit?: boolean; // l'extrait entier est calé sur la durée du plan (extraits en « velocity edit »)
   sfx?: Sfx[]; // « impact » déclenche aussi une secousse de caméra
+  floaters?: Floater[]; // emoji 3D animés qui flottent (src/funny/live.tsx)
+  confetti?: number; // explosion de confettis 3D à cet instant (s)
+  sweep?: number; // balayage de lumière à cet instant (s)
 };
 export type Episode = {
   id: string;
@@ -35,6 +40,7 @@ export type Episode = {
   shots: Shot[];
   end: {clip: ClipId; question: string; line: string; beats: number};
   credit?: string; // crédit musique si la licence l'exige (CC BY) ; Mixkit : non requis
+  emojis?: [string, string, string]; // emoji 3D animés : 2 sur l'accroche, 1 sur l'écran final
 };
 
 export const episodeDuration = (ep: Episode) => {
@@ -146,10 +152,10 @@ const ShotOverlay: React.FC<{shot: Shot; prev?: Shot; frames: number; first?: bo
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 * unit}}>
           {shot.top && <Caption size={64} at={first ? -30 : 0}>{shot.top}</Caption>}
           {shot.center.map((l, i) => (
-            // 1er plan : texte déjà affiché dès la 1re image (c'est l'aperçu dans le fil)
-            <Caption key={l} size={i === 0 ? 108 : i === 1 ? 128 : 76} color={i === 1 ? shot.centerColor ?? colors.yellow : '#fff'} at={first ? -30 : i * 5} maxWidth={820}>
+            // 1er plan : texte déjà affiché dès la 1re image (c'est l'aperçu dans le fil) ; titres en relief 3D
+            <Title3D key={l} font={roundedFont} size={i === 0 ? 104 : i === 1 ? 124 : 74} color={i === 1 ? shot.centerColor ?? colors.yellow : '#fff'} at={first ? -30 : i * 5} maxWidth={820}>
               {l}
-            </Caption>
+            </Title3D>
           ))}
         </div>
       ) : (
@@ -157,9 +163,9 @@ const ShotOverlay: React.FC<{shot: Shot; prev?: Shot; frames: number; first?: bo
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 * unit}}>
             {shot.top && <Caption size={58}>{shot.top}</Caption>}
             {shot.big && (
-              <Caption size={96} color={colors.yellow} maxWidth={820}>
+              <Title3D font={roundedFont} size={90} color={colors.yellow} maxWidth={820}>
                 {shot.big}
-              </Caption>
+              </Title3D>
             )}
             {shot.counter && <Counter from={shot.counter[0]} to={shot.counter[1]} frames={frames} />}
           </div>
@@ -167,13 +173,29 @@ const ShotOverlay: React.FC<{shot: Shot; prev?: Shot; frames: number; first?: bo
             {shot.num !== undefined && (
               <div style={{display: 'flex', alignItems: 'center', gap: 18 * unit}}>
                 <NumBadge n={shot.num} animate={!sameItem} />
-                {shot.name && <Pill size={54} bg={colors.dark} at={sameItem ? undefined : 4}>{shot.name}</Pill>}
+                {shot.name && (
+                  <Flip3D at={sameItem ? -60 : 4}>
+                    <Pill size={54} bg={colors.dark}>{shot.name}</Pill>
+                  </Flip3D>
+                )}
               </div>
             )}
-            {shot.num === undefined && shot.name && <Pill size={54} bg={colors.dark} at={sameItem ? undefined : 4}>{shot.name}</Pill>}
+            {shot.num === undefined && shot.name && (
+              <Flip3D at={sameItem ? -60 : 4}>
+                <Pill size={54} bg={colors.dark}>{shot.name}</Pill>
+              </Flip3D>
+            )}
             <div style={{display: 'flex', gap: 14 * unit, flexWrap: 'wrap'}}>
-              {shot.price && <Pill size={50} at={sameItem ? undefined : 8} rotate={-3}>{shot.price}</Pill>}
-              {shot.info && <Pill size={42} bg="#fff" color={colors.dark} at={sameItem ? undefined : 11} rotate={2}>{shot.info}</Pill>}
+              {shot.price && (
+                <Flip3D at={sameItem ? -60 : 8}>
+                  <Pill size={50} rotate={-3}>{shot.price}</Pill>
+                </Flip3D>
+              )}
+              {shot.info && (
+                <Flip3D at={sameItem ? -60 : 11} from="right">
+                  <Pill size={42} bg="#fff" color={colors.dark} rotate={2}>{shot.info}</Pill>
+                </Flip3D>
+              )}
             </div>
           </div>
         </>
@@ -252,7 +274,17 @@ export const SeriesVideo: React.FC<SeriesProps> = ({episode: ep, safe, withMusic
           />
         )}
         <Series>
-          {plan.map(({s, from, frames}, i) => (
+          {plan.map(({s, from, frames}, i) => {
+            // éléments vivants automatiques : confettis 3D + reflet sur chaque impact, emoji qui réagit en fin de gonflage,
+            // 2 emoji 3D sur l'accroche
+            const impacts = (s.sfx ?? []).filter((x) => x.name === 'impact').map((x) => x.at ?? 0);
+            const inflates = (s.sfx ?? []).some((x) => x.name === 'inflate');
+            const auto: Floater[] = [...(s.floaters ?? [])];
+            if (i === 0 && ep.emojis) {
+              auto.push({emoji: ep.emojis[0], x: 0.12, y: 0.12, size: 170, depth: 0.85, at: -1}, {emoji: ep.emojis[1], x: 0.88, y: 0.86, size: 150, at: -1});
+            }
+            if (inflates && !s.floaters) auto.push({emoji: i % 2 ? 'star-struck' : 'exploding-head', x: 0.86, y: 0.1, size: 150, at: (frames / FPS) * 0.62});
+            return (
             <Series.Sequence key={i} durationInFrames={frames}>
               <Footage
                 clip={s.clip}
@@ -268,16 +300,30 @@ export const SeriesVideo: React.FC<SeriesProps> = ({episode: ep, safe, withMusic
               ))}
               <div style={zoneStyle}>
                 <ShotOverlay shot={s} prev={plan[i - 1]?.s} frames={frames} first={i === 0} />
+                {auto.map((f, k) => (
+                  <FloatingEmoji key={k} f={f} idx={k + i} />
+                ))}
               </div>
+              {s.confetti !== undefined && <Confetti3D at={Math.round(s.confetti * FPS)} />}
+              {impacts.map((t, k) => (
+                <React.Fragment key={k}>
+                  {s.confetti === undefined && <Confetti3D at={Math.round(t * FPS)} count={45} />}
+                  <LightSweep at={Math.round(t * FPS)} />
+                </React.Fragment>
+              ))}
+              {s.sweep !== undefined && <LightSweep at={Math.round(s.sweep * FPS)} />}
             </Series.Sequence>
-          ))}
+            );
+          })}
           <Series.Sequence durationInFrames={total - endFrom}>
             <Footage clip={ep.end.clip} frames={total - endFrom} dim={0.5} from={endFrom} beatFrames={bf} />
             <SfxAt s={{name: 'boing', vol: 0.5}} />
             <SfxAt s={{name: 'ding', at: 0.4, vol: 0.5}} />
             <div style={zoneStyle}>
               <EndCard ep={ep} frames={total - endFrom} />
+              {ep.emojis && <FloatingEmoji f={{emoji: ep.emojis[2], x: 0.86, y: 0.1, size: 160, at: 0.3}} idx={3} />}
             </div>
+            <Confetti3D at={12} count={55} />
           </Series.Sequence>
         </Series>
       </AbsoluteFill>

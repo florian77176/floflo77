@@ -31,6 +31,14 @@ Toujours partir de **vraies images** (rushs du client) avant les photos ; les ph
 - 1re image : texte d'accroche déjà affiché (pas d'animation qui démarre de zéro sur le 1er plan).
 - Vérifier chaque extrait : aucun texte incrusté d'origine (« POV… »), sinon autre passage ou recadrage.
 
+## 2 ter. Éléments « vivants » (src/funny/live.tsx)
+- **Emoji 3D animés** : Noto Animated Emoji de Google (Lottie, CC BY 4.0) dans `public/lottie/<nom>.json`
+  (`https://fonts.gstatic.com/s/e/notoemoji/latest/<code>/lottie.json`), via `@remotion/lottie` : pop, flottement,
+  parallaxe selon la profondeur. Sur le 1er plan, `at: -1` pour qu'ils soient visibles dès la 1re image.
+- **Titres en relief 3D** (extrusion + légère rotation), **étiquettes qui pivotent** (flip 3D), **confettis 3D**,
+  **balayage de lumière** ; ajoutés automatiquement sur chaque impact dans la série Funny Loisirs.
+- Ne pas surcharger : 1–2 emoji par plan maximum, jamais sur le texte principal.
+
 ## 3. Sound design (couches)
 musique (−14 LUFS au final) + whoosh sur coupes + impact/boom sur révélations + riser avant le n°1 + pop sur textes
 + « tic » de compteur. Baisser la musique sous une voix. Bruitages discrets : ils soutiennent, ils ne couvrent pas.

@@ -6,6 +6,8 @@ import {FunnyPromo, PromoProps, promoDuration} from './funny/promo';
 import {EPISODES} from './funny/episodes';
 import {episodeDuration, SeriesVideo} from './funny/series';
 import {mariageDuration, PhoMariage} from './pho/Mariage';
+import {PhoTemplateVideo, phoDuration} from './pho/cards';
+import {PHO_EPISODES} from './pho/episodes';
 import './fonts';
 
 const reelComp = (id: string, props: ReelProps, width = 1080, height = 1920) => (
@@ -54,7 +56,14 @@ export const RemotionRoot: React.FC = () => (
     {funnyComp('Funny-Snapchat-Story', {withMusic: true, cut: 'story', safe: 'snapchat'})}
     {/* couverture : 1re scène, texte resserré dans la zone 4:5 visible sur la grille du profil */}
     {funnyComp('Funny-Cover', {withMusic: false, cut: 'full', safe: 'cover'})}
-    {/* Pho Events : « Mariage 2027 » (fichier 9:16 pour tous les réseaux) */}
+    {/* Pho Events : série avec de vrais modèles de cadres (un fichier 9:16 pour tous les réseaux) */}
+    {PHO_EPISODES.map((ep) => (
+      <Composition key={ep.id} id={`Pho-${ep.id}`} component={PhoTemplateVideo} defaultProps={{episode: ep, withMusic: true}} durationInFrames={phoDuration(ep)} fps={30} width={1080} height={1920} />
+    ))}
+    {PHO_EPISODES.map((ep) => (
+      <Composition key={`${ep.id}-sm`} id={`Pho-${ep.id}-sans-musique`} component={PhoTemplateVideo} defaultProps={{episode: ep, withMusic: false}} durationInFrames={phoDuration(ep)} fps={30} width={1080} height={1920} />
+    ))}
+    {/* Pho Events : ancienne version « Mariage 2027 » (cadres dessinés) */}
     <Composition id="Pho-Mariage" component={PhoMariage} defaultProps={{withMusic: true}} durationInFrames={mariageDuration()} fps={30} width={1080} height={1920} />
     <Composition id="Pho-Mariage-sans-musique" component={PhoMariage} defaultProps={{withMusic: false}} durationInFrames={mariageDuration()} fps={30} width={1080} height={1920} />
     {/* ─── Funny Loisirs : série (un fichier 9:16 pour tous les réseaux) ─── */}
