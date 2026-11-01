@@ -152,9 +152,9 @@ const PrintCard: React.FC<{tpl: TemplateId; maxW: number; maxH: number; entry?: 
   const h = w / T.ratio;
   const p = spring({frame, fps, config: {damping: 13, stiffness: 120, mass: 0.9}});
   let enterTf = '';
-  if (entry === 'drop') enterTf = `translateY(${(1 - p) * -130}%) rotate(${(1 - p) * -14}deg)`;
-  if (entry === 'flip') enterTf = `rotateY(${(1 - p) * 180}deg)`;
-  if (entry === 'slide') enterTf = `translateX(${(1 - p) * 140}%) rotate(${(1 - p) * 10}deg)`;
+  if (entry === 'drop') enterTf = `translateY(${(1 - p) * -55}%) rotate(${(1 - p) * -14}deg)`;
+  if (entry === 'flip') enterTf = `rotateY(${(1 - p) * 75}deg)`;
+  if (entry === 'slide') enterTf = `translateX(${(1 - p) * 65}%) rotate(${(1 - p) * 10}deg)`;
   if (entry === 'zoom') enterTf = `scale(${0.2 + p * 0.8}) rotate(${(1 - p) * 25}deg)`;
   // caméra : zoom vers chaque photo du modèle
   let z = 1;
@@ -250,9 +250,14 @@ const CardView: React.FC<{s: Extract<Scene, {kind: 'card'}>; bf: number}> = ({s,
         <div style={{width: '100%', display: 'flex', justifyContent: 'center'}}>
           {cap && (
             <PopIn key={capKey} at={tour && frame >= tour.from ? tour.from + Math.floor((frame - tour.from) / tour.every) * tour.every + 3 : 8}>
-              <Line size={78} gold italic>
-                {cap}
-              </Line>
+              {tour && frame >= tour.from ? (
+                // pendant la plongée, la photo remplit l'écran : légende sur fond sombre pour rester lisible
+                <Pill size={60}>{cap}</Pill>
+              ) : (
+                <Line size={78} gold italic>
+                  {cap}
+                </Line>
+              )}
             </PopIn>
           )}
         </div>
@@ -327,26 +332,26 @@ const CtaView: React.FC<{s: Extract<Scene, {kind: 'cta'}>; credit?: string}> = (
   return (
     <>
       <Col gap={24}>
-        <Logo size={300} />
-        <PopIn at={6}>
+        <Logo size={300} delay={-6} />
+        <PopIn at={3}>
           <div style={{transform: `scale(${pulse}) rotate(-2deg)`}}>
             <Pill gold size={58}>
               {s.question}
             </Pill>
           </div>
         </PopIn>
-        <PopIn at={10}>
+        <PopIn at={6}>
           <div style={{fontFamily: sans, fontWeight: 700, fontSize: 40 * unit, color: colors.cream}}>
             <span style={{color: colors.gold}}>★★★★★</span> 5,0 / 5 sur Google
           </div>
         </PopIn>
-        <PopIn at={14}>
+        <PopIn at={9}>
           <div style={{fontFamily: sans, fontWeight: 800, fontSize: 64 * unit, color: colors.cream, textAlign: 'center', lineHeight: 1.2}}>
             phoevents.fr
             <div style={{fontSize: 46 * unit, color: colors.gold}}>📞 {'07 68 67 27 55'}</div>
           </div>
         </PopIn>
-        <PopIn at={18}>
+        <PopIn at={12}>
           <div style={{fontFamily: sans, fontWeight: 500, fontSize: 32 * unit, color: colors.muted, textAlign: 'center'}}>
             Devis gratuit · réponse sous 24h
             <br />📍 Seine-et-Marne & Île-de-France
