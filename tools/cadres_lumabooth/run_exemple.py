@@ -7,11 +7,12 @@ from run_white import poly_mask
 
 NAME = 'exemple3photos'
 W, H = 1200, 1800
-APPROX = {  # bord intérieur approximatif (gauche, haut, droite, bas)
+APPROX0 = {  # bord intérieur approximatif (gauche, haut, droite, bas), image d'origine
     'TL': (51, 97, 580, 517),
     'TR': (619, 89, 1152, 518),
     'BIG': (77, 558, 1121, 1067),
 }
+APPROX = {k: tuple(v for p in safe_map(NAME, [(b[0], b[1]), (b[2], b[3])], (W, H)) for v in p) for k, b in APPROX0.items()}
 
 
 def gold_mask(rgb):
@@ -102,6 +103,7 @@ def decor_keep(rgb, quads):
     # creux de la boucle : on y voit la photo
     lens = [(52, 468), (57, 470), (62, 474), (67, 479), (71, 485), (74, 491), (75.5, 497), (75, 503), (72, 508),
             (67, 512), (61, 515), (55, 517), (52, 518)]
+    ribbon, lens = safe_map(NAME, ribbon, (W, H)), safe_map(NAME, lens, (W, H))
     return np.clip(poly_mask(rgb.shape[:2], ribbon) - poly_mask(rgb.shape[:2], lens), 0, 1)
 
 

@@ -49,8 +49,8 @@ Les valeurs sont en pixels pour une page de 1200×1800 (ou 1800×1200). Entre pa
 
 | Case | Largeur | Hauteur | Angle | Gauche | Haut |
 |---|---|---|---|---|---|
-| 1 | 533 (44,4 %) | 754 (41,9 %) | −8,1° | 59 (4,9 %) | 169 (9,4 %) |
-| 2 | 536 (44,7 %) | 740 (41,1 %) | 7,1° | 610 (50,8 %) | 201 (11,2 %) |
+| 1 | 528 (44 %) | 745 (41,4 %) | −5,5° | 83 (6,9 %) | 184 (10,2 %) |
+| 2 | 522 (43,5 %) | 740 (41,1 %) | 4,6° | 603 (50,2 %) | 211 (11,7 %) |
 
 Le cadre de gauche passe par-dessus celui de droite. La case 1 doit donc être **au-dessus** de la case 2 (à mettre avec Bring forward / Send backward).
 
@@ -71,6 +71,19 @@ Le cadre de gauche passe par-dessus celui de droite. La case 1 doit donc être *
 | 3 | 1079 (89,9 %) | 539 (29,9 %) | −0,2° | 60 (5 %) | 542 (30,1 %) |
 
 ## Bon à savoir
+
+- **Marges de sécurité** : les imprimantes photobooth rognent 1,5 à 2 mm sur chaque bord d'un tirage 10×15 sans marge. Les dorures des cadres sont donc gardées loin des bords :
+
+  | Modèle | Distance entre la dorure et le bord |
+  |---|---|
+  | 1 photo | 10 mm et plus |
+  | 2 photos | 4 mm |
+  | 3 photos paysage | 3,3 mm |
+  | 3 photos crème | 2,4 mm |
+
+  Sur le **2 photos**, le dessin d'origine plaçait les dorures à 1 mm du bord : elles auraient été rognées. Les deux cadres ont donc été légèrement redressés (−5,5° et 4,6° au lieu de −8° et 7°) pour s'éloigner des bords. Le fond et les décors (rubans, coups de pinceau, étoiles, verres, ballons) n'ont pas bougé.
+
+  Le **crème** est le plus juste. Il garde au moins 0,5 mm de bleu après la coupe de l'imprimante : contrôle-le sur le tirage test.
 
 - **Recadrage** : chaque photo remplit sa case et ce qui dépasse est coupé.
   - Sur les modèles bleu nuit, les cases sont verticales ou presque carrées. Une borne en vertical coupe le moins.

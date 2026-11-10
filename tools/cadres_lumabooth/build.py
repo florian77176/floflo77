@@ -27,13 +27,34 @@ MIN_BLEED = 3
 BASE_DIR = os.environ.get('BASE_DIR', 'base')
 
 
+# Marges de sécurité : composition légèrement réduite pour que les dorures restent à >= 3,5 mm du bord
+# (les imprimantes photobooth rognent 1 à 2 mm sur un tirage sans marge). Le fond est prolongé en miroir.
+SAFE = {}  # ex. {'nom': 0.97} : réduit toute la composition (fond prolongé en miroir, à éviter si des décors touchent les bords)
+
+
+def safe_map(name, pts, size):
+    """Coordonnées de l'image d'origine -> image avec marges de sécurité."""
+    s = SAFE.get(name, 1.0)
+    W, H = size
+    return [((x - W / 2) * s + W / 2, (y - H / 2) * s + H / 2) for x, y in pts]
+
+
 def base_image(name, size):
     """Image de base à la taille finale (agrandie par l'IA puis réduite en Lanczos)."""
     p = os.path.join(S, BASE_DIR, f'{name}.png')
-    im = Image.open(p).convert('RGB')
-    if im.size != size:
-        im = im.resize(size, Image.LANCZOS)
-    return np.array(im)
+    x4 = os.path.join(S, 'x4', f'{name}.png')
+    im = Image.open(x4 if os.path.exists(x4) else p).convert('RGB')
+    s = SAFE.get(name, 1.0)
+    W, H = size
+    if s == 1.0:
+        return np.array(im.resize(size, Image.LANCZOS) if im.size != size else im)
+    # composition réduite et centrée, fond prolongé en miroir sur la marge
+    pre = np.array(im.resize((int(round(W * s)), int(round(H * s))), Image.LANCZOS)).astype(np.float32)
+    kx, ky = pre.shape[1] / W, pre.shape[0] / H
+    M = np.array([[kx / s, 0, kx * (W / 2 - W / 2 / s)], [0, ky / s, ky * (H / 2 - H / 2 / s)]], np.float32)
+    out = cv2.warpAffine(pre, M, (W, H), flags=cv2.INTER_LINEAR | cv2.WARP_INVERSE_MAP,
+                         borderMode=cv2.BORDER_REFLECT)
+    return np.clip(out, 0, 255).astype(np.uint8)
 
 
 def white_windows(rgb, min_frac=0.02):
