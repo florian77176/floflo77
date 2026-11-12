@@ -101,12 +101,14 @@ def crop_group(F, a, key, pad=6):
 # ---------------------------------------------------------------- 1. modèle d'impression
 def build_print(F, a, variant='fidele'):
     """variant 'fidele' : mise en page d'origine (logo par-dessus la photo, décalé de 30 px du bord).
-    variant 'photo32' : fenêtre au format 3:2 du reflex (aucun recadrage), logo dans sa colonne, sur le beige."""
+    variant 'photo32' : fenêtre au format 3:2 du reflex (aucun recadrage), logo dans sa colonne, sur le beige.
+    variant 'deux_photos' : même structure que 'photo32', deux fenêtres côte à côte (séparées par GAP px)."""
     H4, W4 = a.shape
     OW, OH = 1800, 1200
     sx, sy = OW / W4, OH / H4
     gm = group_masks((H4, W4))
     logo = gm['logo'] & (a > 0)
+    wins = None
     if variant == 'fidele':
         wx0, wy0 = int(round(WIN1[0] * K * sx)), int(round(WIN1[1] * K * sy))
         wx1, wy1 = int(round(WIN1[2] * K * sx)), int(round(WIN1[3] * K * sy))
@@ -115,6 +117,10 @@ def build_print(F, a, variant='fidele'):
         wx0, wy0 = int(round(WIN1[0] * K * sx)), int(round(WIN1[1] * K * sy))
         wy1 = int(round(WIN1[3] * K * sy))
         wx1 = wx0 + int(round((wy1 - wy0) * 1.5))
+        if variant == 'deux_photos':
+            GAP = 24
+            wm = (wx1 - wx0 - GAP) // 2
+            wins = [(wx0, wy0, wm, wy1 - wy0), (wx1 - wm, wy0, wm, wy1 - wy0)]
         ys, xs = np.nonzero(logo & (a > 0.3))
         cx4, cy4 = (xs.min() + xs.max()) / 2, (ys.min() + ys.max()) / 2
         tx, ty = (wx1 + OW) / 2 - 8, (wy0 + wy1) / 2           # centre de la colonne de droite (4,5 mm du bord)
@@ -133,7 +139,9 @@ def build_print(F, a, variant='fidele'):
     As = cv2.resize(A, (OW, OH), interpolation=cv2.INTER_AREA)
     # fenêtre exacte (pixels entiers) et fond beige uni
     bgA = np.ones((OH, OW), np.float32)
-    bgA[wy0:wy1, wx0:wx1] = 0
+    wins = wins or [(wx0, wy0, wx1 - wx0, wy1 - wy0)]
+    for (x, y, w, h) in wins:
+        bgA[y:y + h, x:x + w] = 0
     Pf = Ps + (BEIGE * bgA[..., None]) * (1 - As[..., None])
     Af = As + bgA * (1 - As)
     C = Pf / np.maximum(Af, 1e-4)[..., None]
@@ -141,31 +149,35 @@ def build_print(F, a, variant='fidele'):
     sharp = np.clip(C + 0.5 * (C - cv2.GaussianBlur(C, (0, 0), 0.8)), 0, 255)
     C = np.where((Af > 0.999)[..., None], sharp, C)
     rgba = np.dstack([np.clip(np.round(C), 0, 255), np.clip(np.round(Af * 255), 0, 255)]).astype(np.uint8)
-    return rgba, (wx0, wy0, wx1 - wx0, wy1 - wy0)
+    return rgba, wins
 
 
-def write_lumabooth(rgba, win, out_dir, name='Bouygues_Medailles_2026', bleed=10):
+def write_lumabooth(rgba, wins, out_dir, name='Bouygues_Medailles_2026', bleed=10):
     os.makedirs(out_dir, exist_ok=True)
     png = f'{name}.png'
     Image.fromarray(rgba, 'RGBA').save(os.path.join(out_dir, png), dpi=(300, 300), optimize=True)
-    x, y, w, h = win
-    xml = ('﻿<?xml version="1.0" encoding="UTF-8"?>\n'
+    photos = ''
+    for i, (x, y, w, h) in enumerate(wins):
+        photos += (f'    <Photo Name="Photo {i + 1}" Opacity="100" ShadowEnabled="False" ShadowColor="#FF000000" '
+                   f'ShadowDepth="10" ShadowRadius="20" ShadowDirection="-45" Width="{w + 2 * bleed}" '
+                   f'Height="{h + 2 * bleed}" Top="{y - bleed}" Left="{x - bleed}" ImagePath="" KeepAspect="False" '
+                   f'Thickness="0" StrokeColor="#FF000000" PhotoNumber="{i + 1}" Rotation="0" ZIndex="{i}" '
+                   'IsLocked="True" />\n')
+    xml = ('\ufeff<?xml version="1.0" encoding="UTF-8"?>\n'
            f'<Template Name="Ceremonie des medailles 2026" IsFavorite="False" Width="1800" Height="1200" Dimensions="0" '
            'Resolution="300" BackgroundColor="#FFEBE3D8" print_2_per_page="False" PrintToSecondaryPrinter="False" '
            'LastSavedDate="11/13/2026 12:00:00">\n  <Elements>\n'
            f'    <Image Name="Cadre" Opacity="100" ShadowEnabled="False" ShadowColor="#FF000000" ShadowDepth="10" '
            f'ShadowRadius="20" ShadowDirection="-45" Width="1800" Height="1200" Top="0" Left="0" ImagePath="{png}" '
-           'KeepAspect="True" Thickness="0" StrokeColor="#FF000000" ZIndex="1" IsLocked="True" />\n'
-           f'    <Photo Name="Photo 1" Opacity="100" ShadowEnabled="False" ShadowColor="#FF000000" ShadowDepth="10" '
-           f'ShadowRadius="20" ShadowDirection="-45" Width="{w + 2 * bleed}" Height="{h + 2 * bleed}" Top="{y - bleed}" '
-           f'Left="{x - bleed}" ImagePath="" KeepAspect="False" Thickness="0" StrokeColor="#FF000000" PhotoNumber="1" '
-           'Rotation="0" ZIndex="0" IsLocked="True" />\n  </Elements>\n</Template>\n')
+           f'KeepAspect="True" Thickness="0" StrokeColor="#FF000000" ZIndex="{len(wins)}" IsLocked="True" />\n'
+           + photos + '  </Elements>\n</Template>\n')
     with open(os.path.join(out_dir, 'template.xml'), 'w', encoding='utf-8', newline='\r\n') as f:
         f.write(xml)
     with zipfile.ZipFile(os.path.join(out_dir, f'{name}.zip'), 'w', zipfile.ZIP_DEFLATED) as z:
         z.write(os.path.join(out_dir, 'template.xml'), 'template.xml')
         z.write(os.path.join(out_dir, png), png)
-    return dict(Left=x - bleed, Top=y - bleed, Width=w + 2 * bleed, Height=h + 2 * bleed, fenetre=win)
+    return [dict(Left=x - bleed, Top=y - bleed, Width=w + 2 * bleed, Height=h + 2 * bleed, fenetre=(x, y, w, h))
+            for (x, y, w, h) in wins]
 
 
 # ---------------------------------------------------------------- 2. pages d'accueil 1920x1080
@@ -469,9 +481,10 @@ if __name__ == '__main__':
     os.makedirs(out, exist_ok=True)
     F, a = extract_layer()
     if 'modele' in what:
-        for variant, name in (('fidele', 'Bouygues_Medailles_2026_A_fidele'), ('photo32', 'Bouygues_Medailles_2026_B_photo_3x2')):
-            rgba, win = build_print(F, a, variant)
-            info = write_lumabooth(rgba, win, os.path.join(out, 'LumaBooth', variant), name=name)
+        for variant, name in (('fidele', 'Bouygues_Medailles_2026_A_fidele'), ('photo32', 'Bouygues_Medailles_2026_B_photo_3x2'),
+                              ('deux_photos', 'Bouygues_Medailles_2026_C_2photos')):
+            rgba, wins = build_print(F, a, variant)
+            info = write_lumabooth(rgba, wins, os.path.join(out, 'LumaBooth', variant), name=name)
             print('modele', variant, info)
     if 'accueil' in what or 'anime' in what:
         sc = Scene(F, a)
