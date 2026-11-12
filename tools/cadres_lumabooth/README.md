@@ -40,6 +40,15 @@ Dépendances : `torch` (CPU), `spandrel`, `opencv-python-headless`, `numpy`, `Pi
 
 Hypothèse sur le format : `Rotation` est en degrés, dans le sens horaire, autour du centre du rectangle (Left/Top/Width/Height avant rotation). Le `ZIndex` le plus grand est au-dessus.
 
-**Page d'accueil : `accueil.py`.** Ce script fabrique l'écran de démarrage 1920×1080 à partir du 3 photos paysage. Les cadres réguliers deviennent trois étapes (numéro, icône et texte dorés), et les verres et le ballon restent devant. Il a besoin d'un dossier `fonts/` qui contient :
+**Pages d'accueil : `accueil.py`.** Ce script fabrique les écrans de démarrage 1920×1080 à partir du 3 photos paysage :
+- les étapes 1, 2 et 3 ;
+- la version avec photos (photo, « Touchez l'écran », photo) ;
+- une vidéo en boucle de 35 s (photos en fondu avec léger zoom, halo qui pulse, reflet sur le titre, paillettes).
+
+Le passage au 16:9 se fait sans déformation, avec des bords fondus. Les cadrages des photos sont dans `PHOTOS` et l'ordre de passage dans `ANIM_LEFT` / `ANIM_RIGHT`. Les photos (`jordan/p01.jpg`…) ne sont pas versionnées, car ce sont des photos personnelles et le dépôt est public.
+
+Le script a besoin d'un dossier `fonts/` qui contient :
 - Cinzel[wght].ttf, CormorantGaramond[wght].ttf et CormorantGaramond-Italic[wght].ttf, renommés `Cinzel.ttf`, `Cormorant.ttf` et `CormorantItalic.ttf` (dépôt google/fonts, licence OFL) ;
 - `MaterialIcons.ttf` (dépôt google/material-design-icons, licence Apache 2.0).
+
+Lancer `python3 accueil.py [etapes] [photos] [anime]`.

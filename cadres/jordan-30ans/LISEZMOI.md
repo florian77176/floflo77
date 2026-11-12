@@ -56,13 +56,27 @@ En pixels (page 1200×1800, ou 1800×1200 pour le 3 photos) :
 
 ## Page d'accueil (écran de démarrage)
 
-Elle est dans le dossier `accueil/`, au format **1920 × 1080** (écran PC horizontal, LumaBooth pour Windows). Elle reprend le design du 3 photos : les trois cadres présentent les trois étapes (1 Touchez l'écran pour commencer, 2 Prenez la pose, 3 Découvrez votre photo).
+Toutes les versions sont en **1920 × 1080** (écran PC horizontal, LumaBooth pour Windows) et reprennent le design du 3 photos.
 
-- `accueil_1920x1080.png` : la version à utiliser.
-- `accueil_1920x1080.jpg` : la même en JPG, si LumaBooth refuse le PNG.
-- `accueil_1920x1080_sans_texte.png` : avec les icônes seules, au cas où LumaBooth affiche déjà son propre texte « Touchez pour commencer ».
+**Avec les photos de Jordan** (envoyées à part, pas dans ce dossier, voir plus bas) :
+- `accueil_anime_1920x1080.mp4` : la **vidéo en boucle** de 35 s.
+  - Les photos défilent dans les cadres de gauche et de droite, de bébé à aujourd'hui, avec un léger zoom et des fondus enchaînés.
+  - « Touchez l'écran pour commencer » brille doucement au centre.
+  - Un reflet balaie le titre, et des paillettes scintillent.
+  - La fin s'enchaîne sur le début, sans coupure visible.
+- `accueil_photos_1920x1080.png` / `.jpg` : la **version fixe**, avec Jordan bébé, « Touchez l'écran pour commencer » et Jordan aujourd'hui.
 
-Pour la mettre en place dans LumaBooth, ouvre les réglages de l'**écran d'accueil** (Start Screen) et choisis l'image comme **arrière-plan**. Si LumaBooth ajoute son propre texte ou bouton par-dessus, supprime-le ou prends la version sans texte. C'est une image fixe pour le moment.
+**Sans photos** (dossier `accueil/`) :
+- `accueil_1920x1080.png` / `.jpg` : les trois étapes (1 Touchez l'écran, 2 Prenez la pose, 3 Découvrez votre photo).
+- `accueil_1920x1080_sans_texte.png` : icônes seules, si LumaBooth affiche déjà son propre texte.
+
+Pour la mettre en place dans LumaBooth, ouvre les réglages de l'**écran d'accueil** (Start Screen) :
+- choisis la **vidéo** comme arrière-plan. Si ta version de LumaBooth n'accepte pas de vidéo, prends la **version fixe** (image) ;
+- si LumaBooth ajoute son propre texte ou bouton par-dessus, supprime-le.
+
+Fais un essai sur l'écran de la borne.
+
+Les photos de Jordan ne sont pas dans le dépôt GitHub, qui est public. La vidéo et la page avec photos t'ont été envoyées directement.
 
 ## Ce qu'il y a dans le dossier
 
