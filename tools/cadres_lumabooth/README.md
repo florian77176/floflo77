@@ -2,7 +2,9 @@
 
 Ces scripts transforment des cadres (PNG/JPG avec des cases photo blanches) en modèles LumaBooth importables. Le format est celui de dslrBooth / LumaBooth pour Windows : un .zip qui contient `template.xml` et le PNG du cadre. Ils ont servi pour les 30 ans de Jordan (`cadres/jordan-30ans/`).
 
-**Méthode actuelle : `regulier.py`.** Les fenêtres dessinées par l'IA sont irrégulières. Ce script les remplace par de vrais rectangles identiques (taille et angle ronds, format 2:3 / 3:2 d'un reflex), en procédant ainsi :
+**Méthode actuelle : `fidele.py`.** Ce script garde les cadres d'origine (place, taille, inclinaison) mais les remplace par de vrais rectangles aux valeurs rondes. L'ombre d'origine est conservée, les décors posés devant sont recollés par-dessus, et les cadres trop près du bord sont déplacés en étirant doucement le fond. Les réglages sont dans `SPECS`.
+
+**Variante `regulier.py`.** Les fenêtres dessinées par l'IA sont irrégulières. Ce script les remplace par de vrais rectangles identiques (taille et angle ronds, format 2:3 / 3:2 d'un reflex), en procédant ainsi :
 
 - il retire les anciens cadres du fond (inpainting) ;
 - il redessine la dorure avec la texture d'origine (coins en onglet) et ajoute une ombre portée ;

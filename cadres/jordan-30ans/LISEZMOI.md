@@ -1,65 +1,71 @@
 # Cadres photobooth : 30 ans de Jordan (21/11/2026), prêts pour LumaBooth
 
-4 modèles au format tirage 10×15 (300 dpi). Les cadres dorés ont été **redessinés en vrais rectangles** : dans un même modèle, toutes les cases ont la même taille et un angle rond. Les cases sont transparentes et les photos se placent par-dessous.
+Les 3 modèles de base, fidèles à l'original, au format tirage 10×15 (300 dpi). Les cadres dorés gardent la même place, la même taille et la même inclinaison, mais ce sont maintenant de **vrais rectangles** : dans un même modèle, toutes les cases ont la même taille, avec des angles ronds. Les cases sont transparentes et les photos se placent par-dessous.
 
-| Modèle | Page | Cases photo (taille de la case LumaBooth) | Angles | Borne |
-|---|---|---|---|---|
-| `Jordan30_1photo` | Portrait 1200×1800 | 1 case de **660 × 980** | −5° | Verticale |
-| `Jordan30_2photos` | Portrait 1200×1800 | 2 cases de **500 × 740** | −5° et +5° | Verticale |
-| `Jordan30_3photos` | Paysage 1800×1200 | 3 cases de **420 × 620** | −5°, 0°, +5° | Verticale |
-| `Jordan30_3photos_creme` | Portrait 1200×1800 | 2 cases de **560 × 454** + 1 de **1068 × 534** | 0° (droit) | Horizontale |
+## Les réglages à taper dans LumaBooth
 
-Sur les trois modèles bleu nuit, la partie visible de chaque case est exactement au format 2:3 (400×600, 480×720, 640×960). Une photo de reflex prise **borne verticale** y entre donc entière, sans recadrage.
+| Modèle | Page | Taille de chaque case | Angles |
+|---|---|---|---|
+| **1 photo** | Portrait (4×6 vertical) | **750 × 880** | −6° |
+| **2 photos** | Portrait (4×6 vertical) | **520 × 740** (les 2 identiques) | case 1 : −8° · case 2 : +7° |
+| **3 photos** | Paysage (4×6 horizontal) | **530 × 570** (les 3 identiques) | case 1 : −7° · case 2 : 0° · case 3 : +7° |
 
-## Ce qu'il y a dans le dossier
+Les cases sont numérotées de gauche à droite. Elles dépassent de 10 px sous la dorure : ça laisse une petite marge d'erreur au placement, il suffit qu'aucun vide n'apparaisse dans la case.
 
-- `LumaBooth/` : les 4 modèles à importer (.zip, à ne pas décompresser).
-- `PNG/` : les cadres seuls (PNG transparents), pour la mise en place à la main.
-- `guides/` : l'emplacement de chaque case (numéro, taille, angle).
-- `apercus/` : le rendu avec des photos d'exemple, à montrer à Jordan.
-- `sources/` : les fichiers d'origine.
+## Mise en place à la main (5 minutes par modèle)
 
-## Mise en place à la main dans LumaBooth
-
-1. Copie le PNG du modèle dans l'app **Fichiers** de l'iPad.
+1. Copie le PNG du modèle (dossier `PNG/`) dans l'app **Fichiers** de l'iPad.
 2. Dans LumaBooth, va dans **Print Layout** et crée une mise en page : papier **4×6**, orientation comme dans le tableau.
-3. Ajoute une **Booth Photo** par case (1, 2, 3 dans l'ordre de lecture). Pour chacune, saisis **la largeur, la hauteur et l'angle du tableau**. Dans un même modèle, toutes les cases ont la même taille (sauf la grande du crème).
-4. Fais glisser chaque case sur sa zone, en t'aidant du guide (`guides/`). Les cases dépassent de 10 px sous la dorure, ce qui laisse une petite marge d'erreur : il suffit qu'aucun vide n'apparaisse dans la case.
+3. Ajoute une **Booth Photo** par case. Pour chacune, tape la **largeur**, la **hauteur** et l'**angle** du tableau.
+4. Fais glisser chaque case sur sa zone, en t'aidant de l'image du guide (dossier `guides/`).
 5. Ajoute une **Image**, choisis le PNG, étire-le sur toute la page et mets-le au premier plan avec **Bring forward**.
-6. Sur le **2 photos**, le cadre de gauche passe devant celui de droite : la case 1 doit être au-dessus de la case 2.
+6. **2 photos uniquement** : le cadre de gauche passe devant celui de droite, donc la case 1 doit être au-dessus de la case 2.
 
-**Si les cases penchent à l'envers** par rapport aux cadres dorés, inverse le signe de l'angle (−5 devient 5).
+Si une case penche à l'envers par rapport au cadre doré, inverse le signe de l'angle (−7 devient 7).
 
-**Si LumaBooth n'utilise pas les pixels**, voici les mêmes valeurs en % de la largeur et de la hauteur de la page :
+### Si LumaBooth n'affiche pas des pixels
+
+Voici les mêmes valeurs en % de la largeur et de la hauteur de la page. « Gauche » et « Haut » donnent la position du coin supérieur gauche de la case avant rotation.
 
 | Modèle | Case | Largeur | Hauteur | Gauche | Haut |
 |---|---|---|---|---|---|
-| 1 photo | 1 | 55 % | 54,4 % | 22,5 % | 4,6 % |
-| 2 photos | 1 | 41,7 % | 41,1 % | 7,2 % | 10,6 % |
-| 2 photos | 2 | 41,7 % | 41,1 % | 51,2 % | 10,6 % |
-| 3 photos | 1 | 23,3 % | 51,7 % | 5,2 % | 12,1 % |
-| 3 photos | 2 | 23,3 % | 51,7 % | 38,3 % | 4,7 % |
-| 3 photos | 3 | 23,3 % | 51,7 % | 71,5 % | 12,1 % |
-| crème | 1 | 46,7 % | 25,2 % | 2,8 % | 4,2 % |
-| crème | 2 | 46,7 % | 25,2 % | 50,7 % | 4,2 % |
-| crème | 3 | 89 % | 29,7 % | 5,5 % | 30,2 % |
+| 1 photo | 1 | 62,5 % | 48,9 % | 18,6 % | 8,7 % |
+| 2 photos | 1 | 43,3 % | 41,1 % | 8,1 % | 10 % |
+| 2 photos | 2 | 43,3 % | 41,1 % | 48,9 % | 11,1 % |
+| 3 photos | 1 | 29,4 % | 47,5 % | 4,7 % | 15,2 % |
+| 3 photos | 2 | 29,4 % | 47,5 % | 35,3 % | 8,5 % |
+| 3 photos | 3 | 29,4 % | 47,5 % | 66,6 % | 14,9 % |
 
-« Gauche » et « Haut » donnent la position du coin supérieur gauche de la case avant rotation.
+En pixels (page 1200×1800, ou 1800×1200 pour le 3 photos) :
 
-## Import du .zip (autre possibilité)
+| Modèle | Case | Gauche | Haut |
+|---|---|---|---|
+| 1 photo | 1 | 223 | 157 |
+| 2 photos | 1 | 97 | 180 |
+| 2 photos | 2 | 587 | 200 |
+| 3 photos | 1 | 85 | 182 |
+| 3 photos | 2 | 635 | 102 |
+| 3 photos | 3 | 1198 | 179 |
 
-Les .zip sont au format LumaBooth pour Windows (dslrBooth) : `template.xml` + PNG. Envoie-le sur l'iPad, ouvre-le avec LumaBooth (ou **Print Layout → Import**) et vérifie que les cases tombent bien dans les cadres.
+## Ce qu'il y a dans le dossier
 
-## Bon à savoir
+- `PNG/` : les cadres (PNG transparents), à mettre sur l'iPad.
+- `guides/` : l'emplacement de chaque case (numéro, taille, angle).
+- `apercus/` : le rendu avec des photos d'exemple, à montrer à Jordan.
+- `LumaBooth/` : les mêmes modèles en .zip (format LumaBooth pour Windows / dslrBooth), si tu préfères essayer l'import.
+- `sources/` : les fichiers d'origine.
 
-- **Marges** : les imprimantes photobooth rognent 1,5 à 2 mm sur chaque bord. Les dorures sont à 4 mm ou plus du bord sur les modèles bleu nuit. Sur le crème, elles sont à 2,2–2,5 mm, comme dans son dessin d'origine : contrôle-le sur un tirage test.
-- **Modèle crème** : ses cadres droits recouvrent exactement les anciens. Le fond aquarelle reste donc intact, mais les cases gardent leurs proportions d'origine. Avec un reflex en horizontal :
-  - les deux petites photos sont un peu recadrées sur les côtés ;
-  - la grande photo panoramique est recadrée en haut et en bas. Laisse de la place au-dessus des têtes.
-- **Décors** : les verres, les ballons et le ruban qui touchaient les anciens cadres passent maintenant derrière les nouveaux.
-- **Qualité** : cadres agrandis par IA (Real-ESRGAN) à la taille d'impression, puis accentués pour l'impression. La dorure est la texture d'origine.
-- **Tirage test** : imprime un tirage de chaque modèle que tu utilises avant le 21/11.
+## Ce qui a été amélioré par rapport aux fichiers d'origine
+
+- **Cadres réguliers** : les cadres dessinés par l'IA avaient des côtés de longueurs et d'angles différents (jusqu'à 2° d'écart). Ils sont redessinés en vrais rectangles, avec la texture dorée d'origine.
+- **Netteté** : agrandissement par IA (Real-ESRGAN) jusqu'à la taille d'impression, puis accentuation pour l'impression.
+- **Marges** : sur le 2 photos d'origine, les dorures étaient à 1 mm du bord du papier et auraient été rognées à l'impression. Les deux cadres ont été rapprochés du centre (≈ 2,5 mm chacun), sans rien changer à leur taille ni à leur inclinaison. Le fond s'étire légèrement sur les côtés, et les perles et étoiles gardent leur forme. Dorures à 3 mm ou plus du bord sur les 3 modèles.
+- **Décors** : sur le 3 photos, les flûtes de champagne et le ballon transparent passent toujours devant les photos, comme sur l'original.
+- **Recadrage** : les cases gardent les proportions de l'original, et LumaBooth recadre automatiquement les photos du reflex (3:2). Avec la **borne en vertical** (conseillé pour les 3 modèles) :
+  - sur le 2 photos, le format est presque exact ;
+  - sur le 1 photo et le 3 photos, le haut et le bas des photos sont un peu coupés. Laisse un peu d'espace au-dessus des têtes au cadrage.
+- **Tirage test** : imprime un tirage de chaque modèle avant le 21/11.
 
 ## Refaire ou modifier les modèles
 
-Les scripts sont dans `tools/cadres_lumabooth/`. Les cadres réguliers viennent de `regulier.py`, où les cases sont définies dans `SPECS`.
+Les scripts sont dans `tools/cadres_lumabooth/`. Ces modèles viennent de `fidele.py`, où les tailles, angles et ancrages sont définis dans `SPECS`.

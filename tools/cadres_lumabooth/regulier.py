@@ -41,7 +41,25 @@ def border_strips(rgb, quad, rows=(1, BORDER + 1)):
         T, D = np.meshgrid(ts, ds)
         X = (p[0] + T * u[0] + D * n[0]).astype(np.float32)
         Y = (p[1] + T * u[1] + D * n[1]).astype(np.float32)
-        strips.append(cv2.remap(rgb, X, Y, cv2.INTER_LINEAR).astype(np.float32))
+        st = cv2.remap(rgb, X, Y, cv2.INTER_LINEAR).astype(np.float32)
+        # on ne garde que la plus longue portion vraiment dorée (un autre cadre ou un décor peut cacher le côté)
+        mx = st.max(axis=2)
+        sat = (mx - st.min(axis=2)) / np.maximum(mx, 1)
+        goldpx = (sat > 0.2) & (mx > 120)
+        ok = cv2.blur(goldpx.mean(axis=0).astype(np.float32).reshape(1, -1), (9, 1)).ravel() > 0.45
+        best, cur, start, bstart = 0, 0, 0, 0
+        for k, o in enumerate(ok):
+            if o:
+                if cur == 0:
+                    start = k
+                cur += 1
+                if cur > best:
+                    best, bstart = cur, start
+            else:
+                cur = 0
+        if best >= 60:
+            st = st[:, bstart:bstart + best]
+        strips.append(st)
     return strips  # ordre : haut, droite, bas, gauche
 
 
