@@ -60,11 +60,12 @@ Toutes les versions sont en **1920 × 1080** (écran PC horizontal, LumaBooth po
 
 **Avec les photos de Jordan** (envoyées à part, pas dans ce dossier, voir plus bas) :
 - `accueil_anime_1920x1080.mp4` : la **vidéo en boucle** de 35 s.
-  - Les photos défilent dans les cadres de gauche et de droite, de bébé à aujourd'hui, avec un léger zoom et des fondus enchaînés.
-  - « Touchez l'écran pour commencer » brille doucement au centre.
-  - Un reflet balaie le titre, et des paillettes scintillent.
+  - Les photos défilent dans les cadres de gauche et de droite, de bébé à aujourd'hui. Elles changent en décalé toutes les 7 s par un balayage diagonal suivi d'un trait de lumière dorée, avec un lent zoom avant ou arrière.
+  - Au centre, une main dorée tape l'écran toutes les 2,5 s et lance des ondes dorées, sous « Touchez l'écran pour commencer ».
+  - Un reflet balaie le titre, et des paillettes flottent et scintillent.
   - La fin s'enchaîne sur le début, sans coupure visible.
-- `accueil_photos_1920x1080.png` / `.jpg` : la **version fixe**, avec Jordan bébé, « Touchez l'écran pour commencer » et Jordan aujourd'hui.
+- `accueil_photos_1920x1080.png` / `.jpg` : la **version fixe**, avec Jordan bébé, la main dorée et ses ondes, puis Jordan aujourd'hui.
+- Sur les deux versions, les photos ont des couleurs harmonisées (légère chaleur dorée), une ombre intérieure sous la dorure et un cadrage qui laisse de la place au-dessus de la tête.
 
 **Sans photos** (dossier `accueil/`) :
 - `accueil_1920x1080.png` / `.jpg` : les trois étapes (1 Touchez l'écran, 2 Prenez la pose, 3 Découvrez votre photo).
