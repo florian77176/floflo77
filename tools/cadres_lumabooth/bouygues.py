@@ -146,9 +146,22 @@ def build_print(F, a, variant='fidele'):
     Pf = Ps + (BEIGE * bgA[..., None]) * (1 - As[..., None])
     Af = As + bgA * (1 - As)
     C = Pf / np.maximum(Af, 1e-4)[..., None]
+    # liseré autour des fenêtres : restes du bord blanc d'origine (mélange beige/blanc) -> beige pur.
+    # Les éléments posés sur le bord (logo) ne sont pas touchés (couleur loin du segment beige -> blanc).
+    ring = np.zeros((OH, OW), np.uint8)
+    for (x, y, w, h) in wins:
+        ring[max(0, y - 4):y + h + 4, max(0, x - 4):x + w + 4] = 1
+        ring[y:y + h, x:x + w] = 0
+    seg = WHITE - BEIGE
+    tt = np.clip(((C - BEIGE) @ seg) / (seg @ seg), 0, 1)
+    dseg = np.sqrt(((C - (BEIGE + tt[..., None] * seg)) ** 2).sum(-1))
+    fix = (ring > 0) & (dseg < 30)
+    C[fix] = BEIGE
+    Af[fix] = 1.0
     # accentuation de sortie légère (zones opaques)
     sharp = np.clip(C + 0.5 * (C - cv2.GaussianBlur(C, (0, 0), 0.8)), 0, 255)
-    C = np.where((Af > 0.999)[..., None], sharp, C)
+    near = cv2.dilate((Af < 0.999).astype(np.uint8), np.ones((5, 5), np.uint8)).astype(bool)
+    C = np.where(((Af > 0.999) & ~near)[..., None], sharp, C)
     rgba = np.dstack([np.clip(np.round(C), 0, 255), np.clip(np.round(Af * 255), 0, 255)]).astype(np.uint8)
     return rgba, wins
 
