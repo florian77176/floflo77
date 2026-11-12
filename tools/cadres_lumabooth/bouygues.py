@@ -152,8 +152,14 @@ def build_print(F, a, variant='fidele'):
     return rgba, wins
 
 
-def write_lumabooth(rgba, wins, out_dir, name='Bouygues_Medailles_2026', bleed=10):
+def write_lumabooth(rgba, wins, out_dir, name='Bouygues_Medailles_2026', bleed=10, title=None):
+    """Modèle au format LumaBooth pour Windows (ex-dslrBooth) : dossier <name>/ (template.xml + PNG) et <name>.zip.
+    Les photos sont sous le cadre (ZIndex plus petit) ; LumaBooth les recadre à la forme de chaque case."""
+    import hashlib
+    import base64
     os.makedirs(out_dir, exist_ok=True)
+    title = title or name.replace('_', ' ')
+    tid = base64.urlsafe_b64encode(hashlib.sha1(name.encode()).digest()).decode()[:25]
     png = f'{name}.png'
     Image.fromarray(rgba, 'RGBA').save(os.path.join(out_dir, png), dpi=(300, 300), optimize=True)
     photos = ''
@@ -164,9 +170,9 @@ def write_lumabooth(rgba, wins, out_dir, name='Bouygues_Medailles_2026', bleed=1
                    f'Thickness="0" StrokeColor="#FF000000" PhotoNumber="{i + 1}" Rotation="0" ZIndex="{i}" '
                    'IsLocked="True" />\n')
     xml = ('\ufeff<?xml version="1.0" encoding="UTF-8"?>\n'
-           f'<Template Name="Ceremonie des medailles 2026" IsFavorite="False" Width="1800" Height="1200" Dimensions="0" '
+           f'<Template Name="{title}" IsFavorite="False" Width="1800" Height="1200" Dimensions="0" '
            'Resolution="300" BackgroundColor="#FFEBE3D8" print_2_per_page="False" PrintToSecondaryPrinter="False" '
-           'LastSavedDate="11/13/2026 12:00:00">\n  <Elements>\n'
+           f'LastSavedDate="11/13/2026 12:00:00" Id="{tid}" IsLegacy="True">\n  <Elements>\n'
            f'    <Image Name="Cadre" Opacity="100" ShadowEnabled="False" ShadowColor="#FF000000" ShadowDepth="10" '
            f'ShadowRadius="20" ShadowDirection="-45" Width="1800" Height="1200" Top="0" Left="0" ImagePath="{png}" '
            f'KeepAspect="True" Thickness="0" StrokeColor="#FF000000" ZIndex="{len(wins)}" IsLocked="True" />\n'
@@ -176,6 +182,12 @@ def write_lumabooth(rgba, wins, out_dir, name='Bouygues_Medailles_2026', bleed=1
     with zipfile.ZipFile(os.path.join(out_dir, f'{name}.zip'), 'w', zipfile.ZIP_DEFLATED) as z:
         z.write(os.path.join(out_dir, 'template.xml'), 'template.xml')
         z.write(os.path.join(out_dir, png), png)
+    # même modèle en dossier (pour « importer un dossier » ou copier dans les modèles de LumaBooth)
+    folder = os.path.join(out_dir, name)
+    os.makedirs(folder, exist_ok=True)
+    import shutil
+    shutil.copy2(os.path.join(out_dir, 'template.xml'), os.path.join(folder, 'template.xml'))
+    shutil.copy2(os.path.join(out_dir, png), os.path.join(folder, png))
     return [dict(Left=x - bleed, Top=y - bleed, Width=w + 2 * bleed, Height=h + 2 * bleed, fenetre=(x, y, w, h))
             for (x, y, w, h) in wins]
 
@@ -481,10 +493,11 @@ if __name__ == '__main__':
     os.makedirs(out, exist_ok=True)
     F, a = extract_layer()
     if 'modele' in what:
-        for variant, name in (('fidele', 'Bouygues_Medailles_2026_A_fidele'), ('photo32', 'Bouygues_Medailles_2026_B_photo_3x2'),
-                              ('deux_photos', 'Bouygues_Medailles_2026_C_2photos')):
+        for variant, name, title in (('fidele', 'Bouygues_Medailles_2026_A_fidele', 'Medailles 2026 - A fidele'),
+                                     ('photo32', 'Bouygues_Medailles_2026_B_photo_3x2', 'Medailles 2026 - B 1 photo'),
+                                     ('deux_photos', 'Bouygues_Medailles_2026_C_2photos', 'Medailles 2026 - C 2 photos')):
             rgba, wins = build_print(F, a, variant)
-            info = write_lumabooth(rgba, wins, os.path.join(out, 'LumaBooth', variant), name=name)
+            info = write_lumabooth(rgba, wins, os.path.join(out, 'LumaBooth', variant), name=name, title=title)
             print('modele', variant, info)
     if 'accueil' in what or 'anime' in what:
         sc = Scene(F, a)
