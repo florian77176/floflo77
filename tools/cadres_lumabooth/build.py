@@ -216,8 +216,21 @@ def to_xml_rect(r, W, H):
     return left, top, w, h, round(r['ang'], 1)
 
 
+def print_sharpen(rgba, sigma=1.0, amount=0.8):
+    """Accentuation de sortie pour l'impression 300 dpi (en place), sur les zones opaques seulement
+    (pas près des fenêtres transparentes, pour éviter les halos)."""
+    a = rgba[..., 3]
+    safe = cv2.erode((a == 255).astype(np.uint8), np.ones((7, 7), np.uint8)).astype(bool)
+    rgb = rgba[..., :3].astype(np.float32)
+    sharp = np.clip(rgb + amount * (rgb - cv2.GaussianBlur(rgb, (0, 0), sigma)), 0, 255)
+    rgb[safe] = sharp[safe]
+    rgba[..., :3] = np.round(rgb).astype(np.uint8)
+    return rgba
+
+
 def write_template(name, title, rgba, rects, W, H, bg='#FF14213D', order=None):
     order = order or list(range(len(rects)))
+    print_sharpen(rgba)
     folder = os.path.join(OUT, name)
     os.makedirs(folder, exist_ok=True)
     png_name = f'{name}.png'

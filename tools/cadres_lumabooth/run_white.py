@@ -147,8 +147,14 @@ def retouches(name, out, alpha, rgb):
         veil(out, alpha, ellipse_mask(sh, 1627, 795, 90, 103), a_v=0.2)
 
 def sample_photos():
+    """Photos d'exemple pour les aperçus (tirées de l'exemple fourni ; version agrandie par l'IA si dispo)."""
+    boxes = [(36, 66, 405, 362), (438, 66, 806, 362), (56, 392, 787, 744)]
+    if os.path.exists('x4/exemple3photos.png'):
+        ex = Image.open('x4/exemple3photos.png').convert('RGB')
+        k = ex.width / 843
+        return [ex.crop(tuple(int(round(v * k)) for v in b)) for b in boxes]
     ex = Image.open('src/exemple3photos.jpg').convert('RGB')
-    return [ex.crop((36, 66, 405, 362)), ex.crop((438, 66, 806, 362)), ex.crop((56, 392, 787, 744))]
+    return [ex.crop(b) for b in boxes]
 
 cfg = {
     '1photo':  ((1200, 1800), 'Jordan 30 ans - 1 photo'),

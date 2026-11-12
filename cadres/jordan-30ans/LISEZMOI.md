@@ -89,7 +89,7 @@ Le cadre de gauche passe par-dessus celui de droite. La case 1 doit donc être *
   - Sur les modèles bleu nuit, les cases sont verticales ou presque carrées. Une borne en vertical coupe le moins.
   - Sur le modèle crème, la grande photo du bas est très panoramique : le haut et le bas de l'image sont coupés. Laisse de la place au-dessus des têtes.
 - **Décors devant les photos** : sur le 3 photos paysage, les flûtes de champagne et le ballon transparent passent devant les photos, avec un léger effet de verre. Sur le modèle crème, c'est le ruban doré qui passe devant la 1ʳᵉ photo. C'est voulu.
-- **Qualité** : les cadres ont été agrandis par IA (Real-ESRGAN) jusqu'à la taille d'impression 10×15 à 300 dpi, pour garder les dorures et le texte nets.
+- **Qualité** : les cadres ont été agrandis par IA (Real-ESRGAN) jusqu'à la taille d'impression 10×15 à 300 dpi, puis accentués pour l'impression, pour garder les dorures et le texte nets.
 - **Les aperçus** utilisent les photos de l'exemple uniquement pour illustrer le rendu.
 
 ## Refaire ou modifier les modèles
