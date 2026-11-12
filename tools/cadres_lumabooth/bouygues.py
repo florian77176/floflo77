@@ -15,6 +15,7 @@ import subprocess
 import sys
 import zipfile
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
@@ -497,6 +498,10 @@ if __name__ == '__main__':
                                      ('photo32', 'Bouygues_Medailles_2026_B_photo_3x2', 'Medailles 2026 - B 1 photo'),
                                      ('deux_photos', 'Bouygues_Medailles_2026_C_2photos', 'Medailles 2026 - C 2 photos')):
             rgba, wins = build_print(F, a, variant)
+            # transparence nette : uniquement les fenêtres photo à 100 % (creux des chiffres remplis de beige)
+            from nettoyer_png import clean
+            rgba, holes, fixed = clean(rgba, len(wins), 'EBE3D8')
+            print('  fenêtres transparentes', [h[:4] for h in holes], '| pixels parasites corrigés', fixed)
             info = write_lumabooth(rgba, wins, os.path.join(out, 'LumaBooth', variant), name=name, title=title)
             print('modele', variant, info)
     if 'accueil' in what or 'anime' in what:
