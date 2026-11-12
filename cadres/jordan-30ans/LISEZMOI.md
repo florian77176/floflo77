@@ -54,11 +54,22 @@ En pixels (page 1200×1800, ou 1800×1200 pour le 3 photos) :
 | crème | 2 | 613 | 76 |
 | crème | 3 | 66 | 544 |
 
+## Page d'accueil (écran de démarrage)
+
+Elle est dans le dossier `accueil/`, au format **1920 × 1080** (écran PC horizontal, LumaBooth pour Windows). Elle reprend le design du 3 photos : les trois cadres présentent les trois étapes (1 Touchez l'écran pour commencer, 2 Prenez la pose, 3 Découvrez votre photo).
+
+- `accueil_1920x1080.png` : la version à utiliser.
+- `accueil_1920x1080.jpg` : la même en JPG, si LumaBooth refuse le PNG.
+- `accueil_1920x1080_sans_texte.png` : avec les icônes seules, au cas où LumaBooth affiche déjà son propre texte « Touchez pour commencer ».
+
+Pour la mettre en place dans LumaBooth, ouvre les réglages de l'**écran d'accueil** (Start Screen) et choisis l'image comme **arrière-plan**. Si LumaBooth ajoute son propre texte ou bouton par-dessus, supprime-le ou prends la version sans texte. C'est une image fixe pour le moment.
+
 ## Ce qu'il y a dans le dossier
 
 - `PNG/` : les cadres (PNG transparents), à mettre sur l'iPad.
 - `guides/` : l'emplacement de chaque case (numéro, taille, angle).
 - `apercus/` : le rendu avec des photos d'exemple, à montrer à Jordan.
+- `accueil/` : la page d'accueil de l'écran.
 - `LumaBooth/` : les mêmes modèles en .zip (format LumaBooth pour Windows / dslrBooth), si tu préfères essayer l'import.
 - `sources/` : les fichiers d'origine.
 

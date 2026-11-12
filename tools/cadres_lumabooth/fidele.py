@@ -196,7 +196,7 @@ def build(name):
     for q in quads:
         cv2.fillPoly(hole, [np.round(offset_quad(q, 17)).astype(np.int32)], 255)
     bg = cv2.inpaint(rgb, cv2.dilate(hole, np.ones((3, 3), np.uint8)), 5, cv2.INPAINT_TELEA)
-    strips = [border_strips(rgb, q) for q in quads]   # texture dorée prise sur l'image d'origine
+    strips = [border_strips(rgb, q, trim_rows=True) for q in quads]   # texture dorée prise sur l'image d'origine
     shifts = [f.get('shift', (0, 0)) for f in fr_specs]
     if any(s != (0, 0) for s in shifts):
         protect = np.zeros((H, W), bool)

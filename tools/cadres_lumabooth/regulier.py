@@ -47,6 +47,12 @@ def border_strips(rgb, quad, rows=(1, BORDER + 1), trim_rows=False):
         sat = (mx - st.min(axis=2)) / np.maximum(mx, 1)
         goldpx = (sat > 0.2) & (mx > 120)
         ok = cv2.blur(goldpx.mean(axis=0).astype(np.float32).reshape(1, -1), (9, 1)).ravel() > 0.45
+        # colonnes qui ne ressemblent pas à la dorure type (verre, ruban, ombre posés devant) : écartées
+        prof = st.mean(axis=2)                                   # profondeur x longueur
+        med = np.median(prof[:, ok] if ok.any() else prof, axis=1, keepdims=True)
+        dev = np.abs(prof - med).mean(axis=0)
+        dev = cv2.blur(dev.astype(np.float32).reshape(1, -1), (7, 1)).ravel()
+        ok &= dev < max(28.0, 2.5 * float(np.median(dev)))
         best, cur, start, bstart = 0, 0, 0, 0
         for k, o in enumerate(ok):
             if o:
@@ -131,9 +137,13 @@ def draw_frames(bg, frames, strips_by_frame, order, shadow=True):
             st = fit_strip(strips_by_frame[i][k], lengths[k])
             d = np.clip(depth[k][sel], 0, B - 0.51)
             sp = np.clip(pos[k][sel], 0, st.shape[1] - 1.01)
-            mx = sp.astype(np.float32).reshape(-1, 1)
-            my = d.astype(np.float32).reshape(-1, 1)
-            col[sel] = cv2.remap(st, mx, my, cv2.INTER_LINEAR).reshape(-1, 3)
+            n = sp.size
+            cols_ = 4096
+            rows_ = -(-n // cols_)
+            mx = np.zeros(rows_ * cols_, np.float32); mx[:n] = sp
+            my = np.zeros(rows_ * cols_, np.float32); my[:n] = d
+            res = cv2.remap(st, mx.reshape(rows_, cols_), my.reshape(rows_, cols_), cv2.INTER_LINEAR)
+            col[sel] = res.reshape(-1, 3)[:n]
         bfrac = np.clip(outer - win, 0, 1)                  # part de dorure dans le pixel
         P = (1 - outer)[..., None] * P + bfrac[..., None] * col
         A = (1 - outer) * A + bfrac

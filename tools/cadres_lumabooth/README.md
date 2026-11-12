@@ -39,3 +39,7 @@ python3 chemin/vers/tools/cadres_lumabooth/run_white.py 1photo 2photos 3photos
 Dépendances : `torch` (CPU), `spandrel`, `opencv-python-headless`, `numpy`, `Pillow`.
 
 Hypothèse sur le format : `Rotation` est en degrés, dans le sens horaire, autour du centre du rectangle (Left/Top/Width/Height avant rotation). Le `ZIndex` le plus grand est au-dessus.
+
+**Page d'accueil : `accueil.py`.** Ce script fabrique l'écran de démarrage 1920×1080 à partir du 3 photos paysage. Les cadres réguliers deviennent trois étapes (numéro, icône et texte dorés), et les verres et le ballon restent devant. Il a besoin d'un dossier `fonts/` qui contient :
+- Cinzel[wght].ttf, CormorantGaramond[wght].ttf et CormorantGaramond-Italic[wght].ttf, renommés `Cinzel.ttf`, `Cormorant.ttf` et `CormorantItalic.ttf` (dépôt google/fonts, licence OFL) ;
+- `MaterialIcons.ttf` (dépôt google/material-design-icons, licence Apache 2.0).
