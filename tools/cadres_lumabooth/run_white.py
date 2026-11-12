@@ -148,7 +148,7 @@ def retouches(name, out, alpha, rgb):
 
 def sample_photos():
     """Photos d'exemple pour les aperçus (tirées de l'exemple fourni ; version agrandie par l'IA si dispo)."""
-    boxes = [(36, 66, 405, 362), (438, 66, 806, 362), (56, 392, 787, 744)]
+    boxes = [(52, 78, 398, 356), (446, 74, 798, 356), (68, 400, 778, 738)]  # sans les bordures ni le ruban
     if os.path.exists('x4/exemple3photos.png'):
         ex = Image.open('x4/exemple3photos.png').convert('RGB')
         k = ex.width / 843

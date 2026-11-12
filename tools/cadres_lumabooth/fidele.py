@@ -229,7 +229,93 @@ def build(name):
     return rgba, rects, frames, quads_m
 
 
-if __name__ == '__main__':
+if __name__ == '__main__' and 'creme' not in sys.argv[1:]:
     for nm in sys.argv[1:] or list(SPECS):
         rgba, rects, frames, q = build(nm)
         print(nm, [to_xml_rect(r, *SPECS[nm]['size']) for r in rects])
+
+
+# ---------------------------------------------------------------- modèle crème (3 photos droites)
+CREME = dict(size=(1200, 1800), title='Jordan 30 ans - 3 photos droites (creme)', border=12,
+             # fenêtres visibles (x0, y0, x1, y1) : 2 petites identiques + 1 grande, toutes droites
+             windows=[(49, 86, 577, 520), (623, 86, 1151, 520), (76, 554, 1124, 1068)])
+
+# rubans qui passent DEVANT les cadres sur l'original (coordonnées de la page 1200x1800)
+RUBAN_GAUCHE = [
+    [(0, 397), (20, 413), (40, 427), (45, 430), (45, 466), (40, 462), (20, 444), (0, 430)],          # bande du haut
+    [(0, 529), (20, 524), (42, 519), (60, 515), (70, 511), (78, 505), (82, 508), (82, 525), (70, 533),
+     (55, 542), (40, 551), (20, 558), (0, 564)],                                                      # bande du bas
+]
+RUBAN_DROITE = [[(1088, 20), (1132, 20), (1132, 52), (1160, 46), (1200, 44), (1200, 118), (1185, 118),
+                 (1185, 76), (1165, 77), (1150, 79), (1120, 83), (1100, 83), (1088, 70)]]
+
+
+def creme_front(rgb):
+    """Masque doux des rubans à garder devant les cadres (forme dessinée + tri par couleur)."""
+    from run_white import poly_mask
+    import run_exemple as RE
+    H, W, _ = rgb.shape
+    f = rgb.astype(np.float32)
+    mx = f.max(axis=2)
+    sat = (mx - f.min(axis=2)) / np.maximum(mx, 1)
+    hsv = cv2.cvtColor(rgb, cv2.COLOR_RGB2HSV)
+    gold = (hsv[..., 0] >= 8) & (hsv[..., 0] <= 35) & (sat > 0.22) & (mx > 90)
+    shine = (mx > 200) & (sat < 0.35)                       # reflets clairs du ruban (sur fond bleu nuit)
+    left = np.zeros((H, W), np.float32)
+    for p in RUBAN_GAUCHE:
+        left = np.maximum(left, poly_mask((H, W), p))
+    left = np.maximum(left, RE.decor_keep(rgb, None))      # partie qui s'enroule devant la 1re photo
+    left *= (gold | shine).astype(np.float32)
+    right = np.zeros((H, W), np.float32)
+    for p in RUBAN_DROITE:
+        right = np.maximum(right, poly_mask((H, W), p))
+    right *= gold.astype(np.float32)
+    m = np.maximum(left, right)
+    m = cv2.morphologyEx(m, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))
+    return np.clip(cv2.GaussianBlur(m, (0, 0), 0.6), 0, 1)
+
+
+def build_creme():
+    from run_white import sample_photos
+    import run_exemple as RE
+    W, H = CREME['size']
+    B = CREME['border']
+    rgb = base_image('exemple3photos', (W, H))
+    olds = [RE.quad_from_border(rgb, b)[0] for b in RE.APPROX.values()]
+    frames = [dict(cx=(x0 + x1) / 2, cy=(y0 + y1) / 2, w=x1 - x0, h=y1 - y0, angle=0, border=B)
+              for x0, y0, x1, y1 in CREME['windows']]
+    front = creme_front(rgb)
+    # zone des nouveaux cadres (dorure + fenêtre)
+    new_outer = np.zeros((H, W), np.uint8)
+    for x0, y0, x1, y1 in CREME['windows']:
+        new_outer[y0 - B:y1 + B, x0 - B:x1 + B] = 1
+    # restes de l'ancienne dorure qui dépassent des nouveaux cadres -> fond reconstruit (fines bandes)
+    old_band = np.zeros((H, W), np.uint8)
+    for q in olds:
+        cv2.fillPoly(old_band, [np.round(offset_quad(q, 17)).astype(np.int32)], 1)
+    hole = (old_band > 0) & (new_outer == 0) & (front < 0.05)
+    hole = cv2.dilate(hole.astype(np.uint8), np.ones((3, 3), np.uint8)) & (new_outer == 0)
+    # on reconstruit en ignorant tout l'intérieur des nouveaux cadres (sinon l'ancienne dorure « bave » dans le fond)
+    inner = cv2.dilate(new_outer, np.ones((3, 3), np.uint8)) > 0
+    bg = cv2.inpaint(rgb, ((hole > 0) | inner).astype(np.uint8) * 255, 4, cv2.INPAINT_TELEA)
+    strips = [border_strips(rgb, q, rows=(1, 13), trim_rows=True) for q in olds]
+    order = [0, 1, 2]
+    rf = draw_frames(bg, frames, strips, order, shadow=False)
+    P = rf[..., :3] * rf[..., 3:4]
+    A = rf[..., 3].copy()
+    m = front[..., None]
+    P = P * (1 - m) + rgb.astype(np.float32) * m
+    A = A * (1 - front) + front
+    C = P / np.maximum(A, 1e-4)[..., None]
+    rgba = np.dstack([np.clip(np.round(C), 0, 255).astype(np.uint8), np.clip(np.round(A * 255), 0, 255).astype(np.uint8)])
+    rects = [dict(cx=f['cx'], cy=f['cy'], w=f['w'] + 2 * BLEED, h=f['h'] + 2 * BLEED, ang=0.0) for f in frames]
+    write_template('Jordan30_3photos_creme', CREME['title'], rgba, rects, W, H, bg='#FFF4EEE2', order=order)
+    photos = sample_photos()
+    render_preview(rgba, rects, photos, order=order).save('out/apercu_3photos_creme.jpg', quality=92)
+    render_preview(rgba, rects, photos, with_boxes=True, order=order).save('out/controle_3photos_creme.png')
+    return rgba, rects, int(hole.sum())
+
+
+if __name__ == '__main__' and 'creme' in sys.argv[1:]:
+    rgba, rects, nh = build_creme()
+    print('3photos_creme', [to_xml_rect(r, *CREME['size']) for r in rects], 'pixels reconstruits', nh)

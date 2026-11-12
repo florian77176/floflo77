@@ -24,7 +24,7 @@ SHADOW = dict(dx=-7, dy=9, sigma=9, opacity=0.72)
 
 
 # ---------------------------------------------------------------- texture dorée prélevée sur l'ancien cadre
-def border_strips(rgb, quad, rows=(1, BORDER + 1)):
+def border_strips(rgb, quad, rows=(1, BORDER + 1), trim_rows=False):
     """Bandes de dorure de chaque côté (haut, droite, bas, gauche) : tableau (profondeur, longueur, 3),
     ligne 0 = bord intérieur. Seule la partie centrale (sans les coins en onglet) est gardée."""
     cen = quad.mean(0)
@@ -59,6 +59,13 @@ def border_strips(rgb, quad, rows=(1, BORDER + 1)):
                 cur = 0
         if best >= 60:
             st = st[:, bstart:bstart + best]
+        if trim_rows:  # bordure d'origine plus fine : on coupe les lignes non dorées (ombre, fond) et on étire
+            mx2 = st.max(axis=2)
+            g = ((mx2 - st.min(axis=2)) / np.maximum(mx2, 1) > 0.2) & (mx2 > 120)
+            rows_ok = np.nonzero(g.mean(axis=1) > 0.5)[0]
+            if len(rows_ok) >= 4:
+                st = cv2.resize(st[rows_ok[0]:rows_ok[-1] + 1],
+                                (st.shape[1], st.shape[0]), interpolation=cv2.INTER_LINEAR)
         strips.append(st)
     return strips  # ordre : haut, droite, bas, gauche
 
@@ -101,7 +108,8 @@ def draw_frames(bg, frames, strips_by_frame, order, shadow=True):
     for i in order:
         fr = frames[i]
         cx, cy, w, h, ang = fr['cx'], fr['cy'], fr['w'], fr['h'], fr['angle']
-        u, v, win, outer = frame_maps((H, W), cx, cy, w, h, ang)
+        B = fr.get('border', BORDER)
+        u, v, win, outer = frame_maps((H, W), cx, cy, w, h, ang, B=B)
         # ombre portée (noir, floutée, décalée) sur ce qui est dessous
         sh = cv2.GaussianBlur(outer, (0, 0), SHADOW['sigma'])
         Ms = np.float32([[1, 0, SHADOW['dx']], [0, 1, SHADOW['dy']]])
@@ -109,7 +117,6 @@ def draw_frames(bg, frames, strips_by_frame, order, shadow=True):
         P = P * (1 - sh)[..., None]
         A = A + sh * (1 - A)
         # dorure : côté le plus proche (coins en onglet), profondeur d et position s le long du côté
-        B = BORDER
         dt, dr, db, dl = -v, u - w, v - h, -u            # distance vers l'extérieur de chaque côté
         side = np.argmax(np.stack([dt, dr, db, dl]), 0)
         col = np.zeros((H, W, 3), np.float32)
