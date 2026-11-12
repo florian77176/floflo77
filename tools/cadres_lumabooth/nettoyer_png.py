@@ -2,10 +2,11 @@
 
 - les pixels presque transparents (alpha < 16) deviennent transparents : plus de liseré « à moitié visible » ;
 - on garde comme fenêtres photo les N plus grandes zones 100 % transparentes (N = nombre de cases du modèle) ;
-- les petites zones transparentes en trop (creux d'un chiffre, intérieur d'une boucle de ruban, reflets)
-  deviennent opaques : remplies avec une couleur donnée, ou reconstruites à partir des pixels voisins.
+- les petites zones transparentes en trop (creux d'un chiffre, intérieur d'une boucle de ruban, reflets) :
+  remplies avec une couleur donnée, reconstruites à partir des pixels voisins, ou « quasi » transparentes
+  (alpha 1/255 : la photo s'y voit, mais elles ne comptent pas comme un emplacement photo).
 
-Usage : python3 nettoyer_png.py cadre.png N [couleur_hex|inpaint]   (le fichier est réécrit)
+Usage : python3 nettoyer_png.py cadre.png N [couleur_hex|inpaint|quasi]   (le fichier est réécrit)
 """
 import sys
 
@@ -23,7 +24,12 @@ def clean(rgba, n_windows, fill='inpaint'):
     order = sorted(range(1, n), key=lambda i: -st[i, 4])
     keep = set(order[:n_windows])
     extra = np.isin(lab, [i for i in order[n_windows:]])
-    if extra.any():
+    if extra.any() and fill == 'quasi':
+        # zones gardées visuellement transparentes (la photo s'y voit), mais pas à 100 % :
+        # alpha 1/255, invisible à l'impression, et non compté comme un emplacement photo
+        rgba[extra] = (255, 255, 255, 1)
+        a = rgba[..., 3]
+    elif extra.any():
         # pixels semi-transparents qui bordent ces petites zones : opaques aussi
         grow = cv2.dilate(extra.astype(np.uint8), np.ones((3, 3), np.uint8)).astype(bool)
         main = np.isin(lab, list(keep))

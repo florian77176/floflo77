@@ -498,9 +498,10 @@ if __name__ == '__main__':
                                      ('photo32', 'Bouygues_Medailles_2026_B_photo_3x2', 'Medailles 2026 - B 1 photo'),
                                      ('deux_photos', 'Bouygues_Medailles_2026_C_2photos', 'Medailles 2026 - C 2 photos')):
             rgba, wins = build_print(F, a, variant)
-            # transparence nette : uniquement les fenêtres photo à 100 % (creux des chiffres remplis de beige)
+            # transparence nette : uniquement les fenêtres photo à 100 % ; les creux des lettres et des chiffres posés
+            # sur la photo restent visuellement transparents (alpha 1/255) pour que la photo s'y voie
             from nettoyer_png import clean
-            rgba, holes, fixed = clean(rgba, len(wins), 'EBE3D8')
+            rgba, holes, fixed = clean(rgba, len(wins), 'quasi')
             print('  fenêtres transparentes', [h[:4] for h in holes], '| pixels parasites corrigés', fixed)
             info = write_lumabooth(rgba, wins, os.path.join(out, 'LumaBooth', variant), name=name, title=title)
             print('modele', variant, info)
