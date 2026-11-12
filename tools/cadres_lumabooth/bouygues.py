@@ -50,7 +50,17 @@ def extract_layer():
     x0, y0, x1, y1 = [v * K for v in WIN1]
     yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
     inside = ((xx >= x0) & (xx < x1) & (yy >= y0) & (yy < y1))
-    bg = np.where(inside[..., None], WHITE, BEIGE)
+    nominal = np.where(inside[..., None], WHITE, BEIGE)
+    d0 = np.sqrt(((hi - nominal) ** 2).sum(-1))
+    # fond estimé localement (l'agrandissement IA décale légèrement le beige et le blanc près des éléments)
+    def normconv(mask):
+        m = mask.astype(np.float32)
+        num = cv2.GaussianBlur(hi * m[..., None], (0, 0), 40)
+        den = cv2.GaussianBlur(m, (0, 0), 40)[..., None]
+        return num / np.maximum(den, 1e-3)
+    bg_in = normconv((d0 < 20) & inside)
+    bg_out = normconv((d0 < 20) & ~inside)
+    bg = np.where(inside[..., None], bg_in, bg_out)
     d = np.sqrt(((hi - bg) ** 2).sum(-1))
     # bande autour du bord de la fenêtre : distance au segment beige -> blanc (les mélanges ne sont pas des éléments)
     band = ((np.abs(xx - x0) < 10) | (np.abs(xx - x1) < 10)) & (yy > y0 - 10) & (yy < y1 + 10) | \
@@ -58,10 +68,10 @@ def extract_layer():
     seg = WHITE - BEIGE
     t = np.clip(((hi - BEIGE) @ seg) / (seg @ seg), 0, 1)
     dseg = np.sqrt(((hi - (BEIGE + t[..., None] * seg)) ** 2).sum(-1))
-    d = np.where(band, dseg, d)
+    d = np.where(band, np.maximum(dseg - 4, 0), d)
     dmax = cv2.dilate(d, np.ones((9, 9), np.uint8))
     a = np.maximum(np.clip(d / np.maximum(dmax, 30.0), 0, 1), np.clip((d - 10) / 30.0, 0, 1))
-    a[d < 5] = 0
+    a = a * np.clip((d - 6) / 6.0, 0, 1)                 # en dessous de 6 : bruit du fond, ignoré
     bgc = np.where(band[..., None], BEIGE + t[..., None] * seg, bg)
     F = np.clip(bgc + (hi - bgc) / np.maximum(a, 1e-3)[..., None], 0, 255)
     F[a < 1e-3] = 0
@@ -89,18 +99,30 @@ def crop_group(F, a, key, pad=6):
 
 
 # ---------------------------------------------------------------- 1. modèle d'impression
-def build_print(F, a):
+def build_print(F, a, variant='fidele'):
+    """variant 'fidele' : mise en page d'origine (logo par-dessus la photo, décalé de 30 px du bord).
+    variant 'photo32' : fenêtre au format 3:2 du reflex (aucun recadrage), logo dans sa colonne, sur le beige."""
     H4, W4 = a.shape
     OW, OH = 1800, 1200
     sx, sy = OW / W4, OH / H4
-    # le logo est déplacé de LOGO_SHIFT (1x) vers la gauche
     gm = group_masks((H4, W4))
     logo = gm['logo'] & (a > 0)
+    if variant == 'fidele':
+        wx0, wy0 = int(round(WIN1[0] * K * sx)), int(round(WIN1[1] * K * sy))
+        wx1, wy1 = int(round(WIN1[2] * K * sx)), int(round(WIN1[3] * K * sy))
+        dx, dy = LOGO_SHIFT * K, 0
+    else:
+        wx0, wy0 = int(round(WIN1[0] * K * sx)), int(round(WIN1[1] * K * sy))
+        wy1 = int(round(WIN1[3] * K * sy))
+        wx1 = wx0 + int(round((wy1 - wy0) * 1.5))
+        ys, xs = np.nonzero(logo & (a > 0.3))
+        cx4, cy4 = (xs.min() + xs.max()) / 2, (ys.min() + ys.max()) / 2
+        tx, ty = (wx1 + OW) / 2 - 8, (wy0 + wy1) / 2           # centre de la colonne de droite (4,5 mm du bord)
+        dx, dy = tx / sx - cx4, ty / sy - cy4
     F2, a2 = F.copy(), a.copy()
-    shift = int(round(LOGO_SHIFT * K))
     lf, la = F * logo[..., None], a * logo
     F2[logo], a2[logo] = 0, 0
-    Ms = np.float32([[1, 0, shift], [0, 1, 0]])
+    Ms = np.float32([[1, 0, dx], [0, 1, dy]])
     lf = cv2.warpAffine(lf, Ms, (W4, H4))
     la = cv2.warpAffine(la, Ms, (W4, H4))
     P = F2 * a2[..., None]
@@ -110,8 +132,6 @@ def build_print(F, a):
     Ps = cv2.resize(P, (OW, OH), interpolation=cv2.INTER_AREA)
     As = cv2.resize(A, (OW, OH), interpolation=cv2.INTER_AREA)
     # fenêtre exacte (pixels entiers) et fond beige uni
-    wx0, wy0 = int(round(WIN1[0] * K * sx)), int(round(WIN1[1] * K * sy))
-    wx1, wy1 = int(round(WIN1[2] * K * sx)), int(round(WIN1[3] * K * sy))
     bgA = np.ones((OH, OW), np.float32)
     bgA[wy0:wy1, wx0:wx1] = 0
     Pf = Ps + (BEIGE * bgA[..., None]) * (1 - As[..., None])
@@ -223,12 +243,12 @@ class Scene:
         # colonne de gauche
         X = 140
         self.batir_xy = (X - 4, 112)
-        ty = 392
-        self.filet_xy = (X, ty - 8)
-        tx = X + 28
-        self.titre_xy = (tx, ty)
-        self.medaille_xy = (tx + self.titre[1].shape[1] + 16, ty - 18)
-        self.sous_titre_xy = (tx - 6, ty + 78)
+        # bloc titre (filet, titre, médaille, sous-titre) : disposition d'origine conservée, échelle 1,3
+        S, ox, oy = 1.30, X, 372
+        fx, fy = self.filet[2]
+        for key in ('filet', 'titre', 'medaille', 'sous_titre'):
+            gx, gy = getattr(self, key)[2]
+            setattr(self, key + '_xy', (ox + (gx - fx) * S, oy + (gy - fy) * S))
         self.bouygues_xy = (X + 2, SH - 70 - self.bouygues[1].shape[0])
         # bouton « Touchez l'écran »
         self.pill = (X + 2, 640, 610, 150)
@@ -266,8 +286,8 @@ class Scene:
         P = grad * m[..., None] + 0 * P
         A = m + sh * (1 - m)
         # texte crème
-        f1 = font('Archivo.ttf', 50, axes=[88, 680])
-        f2 = font('Archivo.ttf', 36, axes=[88, 480])
+        f1 = font('Archivo.ttf', 50, axes=[650, 88])
+        f2 = font('Archivo.ttf', 36, axes=[460, 88])
         tx = pad + 168
         tm = text_mask((W, H), [("Touchez l'écran", f1, (tx, pad + h * 0.40), 'lm'),
                                 ('pour commencer', f2, (tx + 2, pad + h * 0.71), 'lm')])
@@ -374,10 +394,10 @@ class Confetti:
     """Confettis dorés qui tombent en tournoyant ; boucle parfaite de LOOP secondes."""
     COLORS = [(214, 168, 88), (236, 205, 140), (190, 140, 70), (232, 75, 4), (150, 105, 55)]
 
-    def __init__(self, n=34, seed=21, avoid=None):
+    def __init__(self, n=30, seed=21, avoid=None):
         rng = np.random.default_rng(seed)
         self.p = [dict(x=rng.uniform(0, SW), y0=rng.uniform(0, 1), laps=int(rng.choice([1, 1, 2])),
-                       w=rng.uniform(7, 12), h=rng.uniform(13, 22), col=self.COLORS[int(rng.choice(5, p=[.32, .3, .2, .1, .08]))],
+                       w=rng.uniform(10, 15), h=rng.uniform(16, 26), col=self.COLORS[int(rng.choice(5, p=[.38, .34, .14, .09, .05]))],
                        spin=int(rng.integers(2, 6)), sph=rng.uniform(0, 6.28), rot=rng.uniform(0, 360),
                        rots=int(rng.choice([-2, -1, 1, 2])), amp=rng.uniform(15, 50), k=int(rng.integers(1, 4)),
                        ph=rng.uniform(0, 6.28), a=rng.uniform(0.75, 0.95)) for _ in range(n)]
@@ -390,7 +410,7 @@ class Confetti:
             x = q['x'] + q['amp'] * math.sin(2 * math.pi * q['k'] * t / LOOP + q['ph'])
             flip = math.cos(2 * math.pi * q['spin'] * t / LOOP + q['sph'])
             ang = math.radians(q['rot'] + 360 * q['rots'] * t / LOOP)
-            hw, hh = q['w'] / 2 * max(0.15, abs(flip)), q['h'] / 2
+            hw, hh = q['w'] / 2 * max(0.35, abs(flip)), q['h'] / 2
             ca, sa = math.cos(ang), math.sin(ang)
             pts = np.array([[-hw, -hh], [hw, -hh], [hw, hh], [-hw, hh]], np.float32) @ np.array([[ca, sa], [-sa, ca]], np.float32)
             pts += [x, y]
@@ -449,9 +469,10 @@ if __name__ == '__main__':
     os.makedirs(out, exist_ok=True)
     F, a = extract_layer()
     if 'modele' in what:
-        rgba, win = build_print(F, a)
-        info = write_lumabooth(rgba, win, os.path.join(out, 'LumaBooth'))
-        print('modele', info)
+        for variant, name in (('fidele', 'Bouygues_Medailles_2026_A_fidele'), ('photo32', 'Bouygues_Medailles_2026_B_photo_3x2')):
+            rgba, win = build_print(F, a, variant)
+            info = write_lumabooth(rgba, win, os.path.join(out, 'LumaBooth', variant), name=name)
+            print('modele', variant, info)
     if 'accueil' in what or 'anime' in what:
         sc = Scene(F, a)
         if 'accueil' in what:
