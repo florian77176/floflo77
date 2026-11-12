@@ -2,7 +2,15 @@
 
 Ces scripts transforment des cadres (PNG/JPG avec des cases photo blanches) en modèles LumaBooth importables. Le format est celui de dslrBooth / LumaBooth pour Windows : un .zip qui contient `template.xml` et le PNG du cadre. Ils ont servi pour les 30 ans de Jordan (`cadres/jordan-30ans/`).
 
-Étapes :
+**Méthode actuelle : `regulier.py`.** Les fenêtres dessinées par l'IA sont irrégulières. Ce script les remplace par de vrais rectangles identiques (taille et angle ronds, format 2:3 / 3:2 d'un reflex), en procédant ainsi :
+
+- il retire les anciens cadres du fond (inpainting) ;
+- il redessine la dorure avec la texture d'origine (coins en onglet) et ajoute une ombre portée ;
+- il écrit des cases photo LumaBooth exactes (fenêtre + 10 px de débord).
+
+Les cases de chaque modèle sont définies dans `SPECS`. Lancer `python3 regulier.py [noms…]` depuis le dossier de travail.
+
+Méthode précédente (cadres d'origine découpés tels quels) :
 
 1. `x4.py modele.pth src/a.jpg base/a.png …` : agrandissement ×4 par Real-ESRGAN (`RealESRGAN_x4plus.pth`, à prendre dans les releases GitHub de xinntao/Real-ESRGAN). La réduction Lanczos à 1200×1800 ou 1800×1200 se fait ensuite toute seule dans `base_image()`.
 2. `run_white.py <nom>…` (cadres à cases blanches) :
